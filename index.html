@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aiden Huynh | Real Estate Agent — Grand Rapids, MI</title>
+    <meta name="description" content="Aiden Huynh, licensed real estate agent at Michigan Top Producers. Residential, multi-family, land, and investment properties in Grand Rapids and West Michigan.">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --black: #0a0a0a; --white: #fff; --gray: #999; --gold: #c4a265; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; color: var(--black); -webkit-font-smoothing: antialiased; }
+
+        /* HERO - FULL SCREEN */
+        .hero {
+            min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
+            text-align: center; padding: 40px 24px; position: relative;
+        }
+        .logo { height: 48px; filter: brightness(0) invert(1); margin-bottom: 48px; }
+        .headshot {
+            width: 180px; height: 180px; border-radius: 50%; object-fit: cover;
+            border: 3px solid rgba(255,255,255,0.2); margin-bottom: 32px;
+        }
+        h1 {
+            font-family: 'Cormorant Garamond', serif; font-size: clamp(36px, 5vw, 56px);
+            font-weight: 300; color: var(--white); letter-spacing: 1px; margin-bottom: 8px;
+        }
+        .subtitle {
+            font-size: 13px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase;
+            color: var(--gold); margin-bottom: 24px;
+        }
+        .tagline {
+            font-size: 16px; font-weight: 300; color: rgba(255,255,255,0.6);
+            max-width: 480px; line-height: 1.7; margin-bottom: 48px;
+        }
+
+        /* CONTACT CARDS */
+        .contact-row {
+            display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-bottom: 40px;
+        }
+        .contact-row a {
+            display: flex; align-items: center; gap: 10px;
+            padding: 14px 28px; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px;
+            color: var(--white); text-decoration: none; font-size: 14px; font-weight: 400;
+            transition: all 0.3s; letter-spacing: 0.5px;
+        }
+        .contact-row a:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.4); }
+        .contact-row svg { width: 18px; height: 18px; fill: var(--gold); flex-shrink: 0; }
+
+        /* CTA BUTTON */
+        .cta {
+            display: inline-block; padding: 16px 44px; background: var(--white); color: var(--black);
+            text-decoration: none; font-size: 12px; font-weight: 600; letter-spacing: 2.5px;
+            text-transform: uppercase; border-radius: 3px; transition: all 0.3s; margin-bottom: 48px;
+        }
+        .cta:hover { background: var(--gold); color: var(--white); }
+
+        /* CONTACT FORM */
+        .form-section {
+            width: 100%; max-width: 460px; border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 40px;
+        }
+        .form-title {
+            font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 400;
+            color: var(--white); margin-bottom: 24px;
+        }
+        .form-section input, .form-section textarea {
+            width: 100%; padding: 14px 16px; border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 4px; background: rgba(255,255,255,0.05); color: var(--white);
+            font-family: 'Inter', sans-serif; font-size: 14px; margin-bottom: 12px;
+            outline: none; transition: border 0.3s;
+        }
+        .form-section input::placeholder, .form-section textarea::placeholder { color: rgba(255,255,255,0.35); }
+        .form-section input:focus, .form-section textarea:focus { border-color: var(--gold); }
+        .form-section textarea { height: 100px; resize: vertical; }
+        .form-section button {
+            width: 100%; padding: 14px; background: var(--gold); color: var(--white); border: none;
+            font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+            letter-spacing: 2px; text-transform: uppercase; cursor: pointer;
+            border-radius: 4px; transition: background 0.3s;
+        }
+        .form-section button:hover { background: #b08d4a; }
+        .form-success { display: none; color: var(--gold); font-size: 14px; margin-top: 12px; }
+
+        /* FOOTER */
+        .footer {
+            text-align: center; padding: 20px; background: rgba(0,0,0,0.3);
+            font-size: 12px; color: rgba(255,255,255,0.3);
+        }
+        .footer a { color: rgba(255,255,255,0.3); text-decoration: none; }
+        .footer a:hover { color: var(--white); }
+
+        /* SOCIALS */
+        .socials { display: flex; gap: 20px; justify-content: center; margin-bottom: 40px; }
+        .socials a { color: rgba(255,255,255,0.4); transition: color 0.3s; }
+        .socials a:hover { color: var(--white); }
+        .socials svg { width: 22px; height: 22px; fill: currentColor; }
+
+        @media (max-width: 600px) {
+            .contact-row { flex-direction: column; align-items: center; }
+            .contact-row a { width: 100%; max-width: 280px; justify-content: center; }
+            .headshot { width: 140px; height: 140px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <img src="images/logo.png" alt="Elite Realty | Michigan Top Producers" class="logo">
+    <img src="images/headshot.jpeg" alt="Aiden Huynh" class="headshot">
+    <h1>Aiden Huynh</h1>
+    <div class="subtitle">Licensed Real Estate Agent</div>
+    <p class="tagline">Helping buyers, sellers, and investors across Grand Rapids, Kentwood, and West Michigan. Let's find your next move.</p>
+
+    <div class="contact-row">
+        <a href="tel:+16168903119">
+            <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.24 1.01l-2.21 2.2z"/></svg>
+            (616) 890-3119
+        </a>
+        <a href="mailto:aiden@michigantopproducers.com">
+            <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            Email Me
+        </a>
+        <a href="sms:+16168903119">
+            <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12zM7 9h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/></svg>
+            Text Me
+        </a>
+    </div>
+
+    <div class="socials">
+        <a href="https://www.facebook.com/profile.php?id=61571618498498" target="_blank"><svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+        <a href="https://www.instagram.com/" target="_blank"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+    </div>
+
+    <a href="#contact-form" class="cta">Send Me a Message</a>
+
+    <div class="form-section" id="contact-form">
+        <div class="form-title">Let's Talk Real Estate</div>
+        <form id="cform" onsubmit="submitForm(event)">
+            <input type="text" name="name" placeholder="Your Name" required>
+            <input type="email" name="email" placeholder="Email Address" required>
+            <input type="tel" name="phone" placeholder="Phone Number">
+            <textarea name="message" placeholder="What are you looking for? Buying, selling, investing..."></textarea>
+            <button type="submit">Send Message</button>
+        </form>
+        <div class="form-success" id="form-success">Message sent! I'll get back to you shortly.</div>
+    </div>
+</div>
+
+<div class="footer">
+    &copy; 2026 Aiden Huynh — Michigan Top Producers
+    &ensp;|&ensp; <a href="https://empatheticinc.github.io/privacy-policy/">Privacy</a>
+    &ensp;|&ensp; <a href="https://empatheticinc.github.io/privacy-policy/terms.html">Terms</a>
+</div>
+
+<script>
+function submitForm(e) {
+    e.preventDefault();
+    const f = e.target;
+    const name = f.querySelector('[name=name]').value;
+    const email = f.querySelector('[name=email]').value;
+    const phone = f.querySelector('[name=phone]').value;
+    const msg = f.querySelector('[name=message]').value;
+    const mailto = 'mailto:aiden@michigantopproducers.com?subject=' +
+        encodeURIComponent('Website Inquiry from ' + name) +
+        '&body=' + encodeURIComponent('Name: ' + name + '\nEmail: ' + email + '\nPhone: ' + phone + '\n\n' + msg);
+    window.location.href = mailto;
+    f.reset();
+    document.getElementById('form-success').style.display = 'block';
+    setTimeout(() => document.getElementById('form-success').style.display = 'none', 5000);
+}
+</script>
+
+</body>
+</html>
