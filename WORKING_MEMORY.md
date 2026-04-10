@@ -197,3 +197,48 @@ Date: 2026-04-10
   - Live bundle contains `Revenue Protection`, `Revenue at risk`, `lead SLA flags`, `budget x`, and `revenue_protection`
   - John Doe test scope verified through API token: `79` leads, `0` at-risk dollars, `0` SLA flags, and `$177,906` protected weighted GCI
 - Important truthfulness note: John Doe's current scoped data correctly shows `$0` revenue at risk because his hot leads are recently contacted/protected; this should stay truthful rather than padded.
+
+## 2026-04-10 Admin/Broker Integration Pass
+
+- Reworked the production Admin panel into a cleaner left-nav control center:
+  - Overview
+  - Members
+  - System
+  - Audit
+- Removed the previous large explanatory Admin hero text and the unnecessary `Show Jane / John` / `Show Admin` quick-filter buttons.
+- Members now use a normal search/filter flow and show role, brokerage, team, onboarding timestamp, active status, and controls.
+- Added a dedicated Admin `System` panel with service health, AI/Qdrant vector status, pending approvals, active sessions, DB size, memory use, auth coverage, and table-count visibility.
+- Tightened the Admin audit trail UI and changed the backend audit feed to exclude client-level email/lead events so the system admin surface does not expose client names or pipeline details.
+- Preserved only the three intended active member accounts in the users table:
+  - `aiden@vesta-tech.net` — system admin
+  - `aiden.h.huynh@gmail.com` — John Doe test broker
+  - `empathetic.inc@gmail.com` — Jane Doe test team lead
+- Removed seeded/demo users, demo teams, demo brokerages, team invites, demo lead artifacts, old AI routing logs, old demo memory directives, and old-branded email signatures.
+- Database backup created before cleanup:
+  - `/home/empathetic/.openclaw/workspace/vesta.pre-demo-cleanup.20260410T212714Z.db`
+- Current remaining org labels:
+  - Admin: `Vesta Platform` / `Core Operations`
+  - Test accounts: `Vesta Sandbox` / `Sandbox Team`
+- Old branding/database scan is clean for:
+  - `Michigan Top Producers`
+  - `Elite Team`
+  - `Top Producers`
+  - `John Doe (Sample Lead)`
+  - `michigantopproducers.com`
+- Broker overview audit:
+  - Reproduced all Broker overview widget endpoint calls as John Doe.
+  - `/api/broker/overview`, `/teams`, `/activity`, `/leaderboard`, `/health`, `/trends`, `/pipeline_value`, `/revenue`, and `/briefing` all returned HTTP 200.
+  - Replaced the vague Broker frontend warning with a widget-specific message: `Broker widgets unavailable: <names>. Core overview is live.`
+  - Fixed Broker briefing revenue math so it scopes revenue snapshot leads by the acting broker's brokerage.
+- Verified Claude/frontend integration:
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `npm run deploy` passed.
+  - API compile check passed.
+  - API restarted and `/health` returned OK.
+  - Live bundle: `/api/ui/assets/index-Bz6nMiIC.js`.
+- Open product risk:
+  - Active background CRM monitors (`fub-inbound-monitor.py`, `email-monitor.py`, `speed-to-lead.py`) re-import live CRM/FUB lead data after demo cleanup.
+  - Current DB has `90` leads and `45` duplicate `fub_id` groups because the same FUB contacts are being imported for both John and Jane.
+  - This appears to be live CRM/import behavior rather than the old seeded `.test` demo users.
+  - Next fix should de-duplicate broker/team lead rollups by `fub_id` and/or adjust `api/fub_sync.py` ownership matching so the same FUB contact is not counted twice at brokerage/team level.
