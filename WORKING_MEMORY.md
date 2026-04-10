@@ -55,6 +55,30 @@ Date: 2026-04-10
 - Implemented Phase 1 in the production app: executive ROI layer added to Broker Portal overview using live metrics already available in `/api/broker/overview`, `/api/broker/pipeline_value`, and `/api/broker/revenue`.
 - Implemented Phase 2 in the production app: team efficiency ROI layer added to Team Portal overview using existing team metrics for load per agent, hot lead pressure, actions per agent, approval load, stale rate, and sender readiness.
 - Verified both Phase 1 and Phase 2 changes with `npm run build` and `npm run lint` in `/home/empathetic/.openclaw/workspace/vesta-app`.
+- Reworked the production Admin panel in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/AdminPanel.jsx` to focus on system operations instead of pipeline/client access.
+- Shifted Admin toward a cleaner operations view with:
+  - platform health
+  - active member counts
+  - brokerage/team structure
+  - member roster controls
+  - audit visibility
+- Removed the need for Admin to view client-specific pipelines; the page now reads more like an org operations console than a sales workspace.
+- Verified the new Admin panel with `npm run build` and `npm run lint` in `/home/empathetic/.openclaw/workspace/vesta-app`.
+- Replaced placeholder branding on `vesta-tech.net` with a proper reusable logo system:
+  - `logo-mark.svg`
+  - `logo-wordmark.svg`
+  - `logo-mark-192.png`
+  - `logo-mark-512.png`
+  - `og-logo.png`
+- Updated the live marketing site to use the new logo in nav, mobile menu, footer, social preview metadata, manifest icons, and service worker notification icons.
+- Audited and cleaned live-site demo links so active demo CTAs now route to `https://vesta-tech.net/demo.html`, and removed dead `dev-login` / `demo-switch` marketing links.
+- Confirmed `vesta-tech.net` DNS is hosted on Cloudflare nameservers:
+  - `kareem.ns.cloudflare.com`
+  - `selah.ns.cloudflare.com`
+- Checked public TXT records for `vesta-tech.net` and confirmed the OpenAI domain verification TXT record is not published yet.
+- OpenAI verification token to add at the root domain:
+  - `openai-domain-verification=dv-Nz0VOpJk3FDB6xVDYTGJcdfD`
+- Current blocker: no Cloudflare credentials are available in this environment, so DNS can be verified from here after publication, but not created from this machine today.
 
 ## Operating Rule Going Forward
 
@@ -80,3 +104,9 @@ Date: 2026-04-10
 - Phase 2: Team Efficiency ROI — complete
 - Phase 3: Lead-Level Revenue Protection — next
 - Phase 4: Market Positioning + Product Proof — pending
+
+## Immediate Next Steps
+
+- In Cloudflare DNS for `vesta-tech.net`, add a TXT record at `@` with value `openai-domain-verification=dv-Nz0VOpJk3FDB6xVDYTGJcdfD`.
+- After DNS propagation, re-check the public TXT record and complete the OpenAI-side verification.
+- Continue production work with Phase 3: lead-level revenue protection inside the app.
