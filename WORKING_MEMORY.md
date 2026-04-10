@@ -355,3 +355,44 @@ Date: 2026-04-10
     - raw lead rows: `101`
 - Note:
   - `/api/broker/health` reports `vesta-platform` systemd service as inactive while the direct Uvicorn process and `/health` are OK. This is not blocking, but the service-manager status should be cleaned up later if we want the health panel to match the actual running API process.
+
+## 2026-04-10 P3 Closeout: Health and Automatic ROI Snapshots
+
+- Finished the remaining recommended P3 closeout before moving to P4.
+- Backend files changed:
+  - `/home/empathetic/.openclaw/workspace/api/app.py`
+  - `/home/empathetic/.openclaw/workspace/api/routers/broker_portal.py`
+- Fixed Broker health mismatch:
+  - `/api/broker/health` now treats `vesta-platform` as active when the production Uvicorn `api.app:app` process is running, even if the stale user-level systemd unit reports inactive.
+  - Verified Broker health now reports all checked services active:
+    - `vesta-platform`
+    - `vesta-bot`
+    - `openclaw-gateway`
+    - `email-monitor`
+    - `speed-to-lead`
+- Added automatic ROI snapshot capture on API startup:
+  - Startup DB connection now sets `row_factory=sqlite3.Row`.
+  - `capture_roi_snapshots_for_all_brokerages(conn)` captures today's ROI snapshot for brokerages that have an active `head_broker` and production lead rows.
+  - This avoids creating investor snapshots for the platform/admin brokerage.
+  - The extra platform/admin snapshot created during dry-run was deleted.
+- Current ROI snapshot table is scoped to the active broker-owned production brokerage only:
+  - brokerage: `0df4c7bc-2c74-48b5-940f-d995a4847d30`
+  - snapshot date: `2026-04-10`
+  - total projected GCI: `$160,336`
+  - pipeline GCI: `$77,794`
+  - distinct FUB contacts: `46`
+  - raw lead rows: `101`
+- Verification:
+  - `python3 -m compileall -q api/app.py api/routers/broker_portal.py`
+  - API restarted and `/health` returned OK.
+  - Startup log no longer shows ROI snapshot errors.
+  - Broker smoke endpoints returned HTTP 200:
+    - `/api/broker/health`
+    - `/api/broker/revenue`
+    - `/api/broker/roi_history?days=30`
+    - `/api/broker/overview`
+    - `/api/broker/pipeline_value`
+- P3 status:
+  - P3 can be considered complete.
+  - Do not run FUB duplicate cleanup while John/Jane share the same FUB account.
+  - Next phase can move to P4.
