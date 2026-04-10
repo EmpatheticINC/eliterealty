@@ -242,3 +242,32 @@ Date: 2026-04-10
   - Current DB has `90` leads and `45` duplicate `fub_id` groups because the same FUB contacts are being imported for both John and Jane.
   - This appears to be live CRM/import behavior rather than the old seeded `.test` demo users.
   - Next fix should de-duplicate broker/team lead rollups by `fub_id` and/or adjust `api/fub_sync.py` ownership matching so the same FUB contact is not counted twice at brokerage/team level.
+
+## 2026-04-10 P3 Broker Revenue Dedupe
+
+- Continued P3 by making broker/investor-facing ROI math truthful when CRM contacts are imported under multiple owners.
+- Backend file changed: `/home/empathetic/.openclaw/workspace/api/routers/broker_portal.py`.
+- Frontend file changed: `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/BrokerPortal.jsx`.
+- Added a broker rollup CTE that chooses one canonical row per `fub_id` for brokerage-level lead/revenue math.
+- Updated Broker Overview, management risk signals, Trends stage counts, Pipeline Value, Revenue, and Briefing revenue snapshot to dedupe by distinct FUB contacts where appropriate.
+- Added `data_quality` / `lead_count_basis=distinct_fub_contacts` metadata to broker overview/revenue surfaces.
+- Broker UI now shows the data-quality trust signal in the Executive ROI Snapshot:
+  - `46 distinct CRM contacts from 92 owner rows`
+- Verification:
+  - `python3 -m compileall -q api/routers/broker_portal.py`
+  - `npm run lint`
+  - `npm run build`
+  - `npm run deploy`
+  - API restarted and `/health` returned OK
+  - Live bundle: `/api/ui/assets/index-_9YKxYq3.js`
+  - John Doe broker API verification: `/overview`, `/trends`, `/pipeline_value`, `/revenue`, `/briefing`, `/teams`, `/activity`, `/leaderboard`, and `/health` all returned HTTP 200.
+  - Verified P3 dedupe numbers:
+    - raw lead rows: `92`
+    - distinct FUB contacts: `46`
+    - overview total leads: `46`
+    - hot leads: `3`
+    - weighted pipeline total GCI: `$160,336`
+    - pipeline GCI: `$77,794`
+- Remaining P3 recommendation:
+  - Add a true investor-facing ROI proof panel that compares protected revenue, automation value, and deduped CRM contact coverage over time.
+  - Later harden `api/fub_sync.py` so the same FUB contact is not inserted once per connected test owner when the brokerage wants shared broker-level rollups.
