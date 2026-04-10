@@ -313,3 +313,45 @@ Date: 2026-04-10
 - Remaining P3 recommendation:
   - Decide whether to run a careful one-time historical lead-row dedupe. If we do it, verify agent/team lead pipeline visibility first so we do not accidentally hide shared test CRM contacts from Jane or future agent scopes.
   - Next value slice can be ROI trend history over time, not just a point-in-time proof card.
+
+## 2026-04-10 P3 ROI Trend Baseline
+
+- User clarified that John/Jane currently point to the same underlying FUB account because only one FUB account is available right now:
+  - The duplicate-looking contacts are expected in this temporary setup.
+  - Do not run historical lead-row dedupe until separate FUB accounts/keys are available.
+  - Keep broker ROI math deduped by distinct FUB contacts, but leave the raw rows alone.
+- Continued P3 by adding truthful investor ROI trend capture instead of backfilled/demo history.
+- Backend file changed: `/home/empathetic/.openclaw/workspace/api/routers/broker_portal.py`.
+- Frontend file changed: `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/BrokerPortal.jsx`.
+- Added `broker_roi_snapshots` storage:
+  - One row per brokerage per UTC date.
+  - Captures closed GCI, pipeline GCI, total projected GCI, annual pace, targets, distinct leads, and raw lead rows.
+- `/api/broker/revenue` now upserts today's ROI snapshot and returns `roi_history`.
+- Added `/api/broker/roi_history?days=30`.
+- Added Broker Revenue tab panel: `Investor ROI Trend`.
+  - Shows current/baseline projected GCI.
+  - Shows pipeline delta once at least two snapshots exist.
+  - Shows a no-fake-history baseline message until daily snapshots accumulate.
+- Verification:
+  - `python3 -m compileall -q api/routers/broker_portal.py`
+  - `npm run lint`
+  - `npm run build`
+  - `npm run deploy`
+  - API restarted and `/health` returned OK.
+  - Live bundle: `/api/ui/assets/index-ClY8UQSu.js`.
+  - Live bundle contains `Investor ROI Trend`, `Baseline captured today`, and `ROI history starts now`.
+  - Broker smoke endpoints returned HTTP 200:
+    - `/api/broker/overview`
+    - `/api/broker/revenue`
+    - `/api/broker/roi_history?days=30`
+    - `/api/broker/pipeline_value`
+    - `/api/broker/health`
+  - Captured baseline snapshot for `2026-04-10`:
+    - closed GCI: `$82,542`
+    - pipeline GCI: `$77,368`
+    - total projected GCI: `$159,910`
+    - annual pace: `$479,730`
+    - distinct FUB contacts: `46`
+    - raw lead rows: `101`
+- Note:
+  - `/api/broker/health` reports `vesta-platform` systemd service as inactive while the direct Uvicorn process and `/health` are OK. This is not blocking, but the service-manager status should be cleaned up later if we want the health panel to match the actual running API process.
