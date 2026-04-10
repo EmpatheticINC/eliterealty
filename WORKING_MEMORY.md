@@ -396,3 +396,56 @@ Date: 2026-04-10
   - P3 can be considered complete.
   - Do not run FUB duplicate cleanup while John/Jane share the same FUB account.
   - Next phase can move to P4.
+
+## 2026-04-10 P4 Start: Production Reliability and Admin Ops Signals
+
+- Started P4 with the first recommended reliability/operations slice.
+- Goal:
+  - Make the production admin/broker health surfaces reflect the actual live API instead of the stale demo-oriented `vesta-platform` systemd unit.
+  - Give the admin panel cleaner operational freshness signals so Aiden can visually confirm syncs, services, and ROI snapshot capture.
+- Backend files changed:
+  - `/home/empathetic/.openclaw/workspace/api/routers/admin.py`
+  - `/home/empathetic/.openclaw/workspace/api/routers/broker_portal.py`
+- Frontend files changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/AdminPanel.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/BrokerPortal.jsx`
+- Admin system endpoint changes:
+  - `/api/admin/system` now reports `vesta-api` instead of `vesta-platform`.
+  - Added process fallback so direct Uvicorn production API process is treated as active even when user-level systemd is stale/inactive.
+  - Added `automation` payload with freshness signals for:
+    - FUB Sync
+    - Email Monitor
+    - Speed-to-Lead
+    - ROI Snapshot
+- Admin panel changes:
+  - System tab now includes an `Automation Freshness` section.
+  - It displays the latest production signal time and optional service/timer status for key automations.
+- Broker health changes:
+  - `/api/broker/health` now reports `vesta-api` and no longer points to `vesta-platform`.
+  - Broker health service labels now display `API Server`.
+- Deployment:
+  - `npm run deploy` completed.
+  - Live bundle: `/api/ui/assets/index-C_9-FpUc.js`.
+- Verification:
+  - `python3 -m compileall -q api/routers/admin.py api/routers/broker_portal.py api/app.py`
+  - `npm run lint`
+  - `npm run build`
+  - `npm run deploy`
+  - API restarted and `/health` returned OK.
+  - Live bundle contains `Automation Freshness`, `vesta-api`, and `Last successful production signals`.
+  - Authenticated admin smoke returned HTTP 200 for `/api/admin/system`.
+  - Authenticated broker smoke returned HTTP 200 for `/api/broker/health`.
+  - Admin system smoke reported:
+    - `vesta-api`: active
+    - `vesta-bot`: active
+    - `email-monitor`: active
+    - `speed-to-lead`: active
+    - `openclaw-gateway`: active
+    - FUB Sync latest: `2026-04-10T23:43:47.881944+00:00`
+    - Email Monitor latest: `2026-04-10T21:31:14.759940+00:00`
+    - ROI Snapshot latest: `2026-04-10T23:43:39.577421+00:00`
+- Important note:
+  - Do not use stale `vesta-platform.service` for production restarts; it still contains demo isolation environment settings including `VESTA_DEMO_DB` and a blank `FUB_API_KEY`.
+  - Current production API is the direct Uvicorn `api.app:app` process on `127.0.0.1:8080`.
+- P4 next suggested slice:
+  - Investor reporting/ROI assumptions controls and export-ready proof points.
