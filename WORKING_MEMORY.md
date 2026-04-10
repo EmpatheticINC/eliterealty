@@ -64,6 +64,12 @@ Date: 2026-04-10
   - audit visibility
 - Removed the need for Admin to view client-specific pipelines; the page now reads more like an org operations console than a sales workspace.
 - Verified the new Admin panel with `npm run build` and `npm run lint` in `/home/empathetic/.openclaw/workspace/vesta-app`.
+- Deployed the production Admin panel to the live app static bundle served by `https://vesta-tech.net/admin`.
+- Verified the live `/admin` route now loads `/api/ui/assets/index-Bt6_cxVV.js`, which contains the `Platform Operations` Admin upgrade.
+- Removed old `Michigan Top Producers`, `Elite Team`, and `Elite Real Estate Teams` branding from active production app, API, demo prompt defaults, static app metadata, and current public bundles.
+- Updated the app deploy script to clear stale `index-*` JS/CSS bundles before copying the current build so old branded bundles do not remain publicly accessible after deploys.
+- Removed the old public `index.v1.0.backup.html` file because it contained retired brokerage/team branding and was still web-accessible.
+- Gracefully reloaded the running Uvicorn API parent with `SIGHUP`; health check remained OK afterward.
 - Replaced placeholder branding on `vesta-tech.net` with a proper reusable logo system:
   - `logo-mark.svg`
   - `logo-wordmark.svg`
