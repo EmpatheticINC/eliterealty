@@ -94,6 +94,16 @@ Date: 2026-04-10
   - Restarted the Uvicorn API with `setsid`; health check returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
   - Verified a generated `aiden@vesta-tech.net` system-admin session can call `/auth/me`, `/api/admin/stats`, `/api/admin/system`, and `/api/admin/users` with HTTP 200.
   - Verified `/app/app.html` still redirects to `https://vesta-tech.net/chat`.
+- Added another Admin portal upgrade for account visibility and truthful metrics:
+  - Verified Jane Doe (`empathetic.inc@gmail.com`) and John Doe (`aiden.h.huynh@gmail.com`) were not deleted and still exist as test accounts.
+  - Added an Admin `Identity Control Center` that separates the real production admin (`aiden@vesta-tech.net`) from the two dummy accounts.
+  - Added Admin `Access Guardrails` with system-admin count, inactive member count, and clickable role distribution.
+  - Added `Show Jane / John` and `Show Admin` quick filters in the member roster.
+  - Reworked Admin labels to avoid ambiguous or inflated KPI language; counts now say `DB Users`, `Active User Records`, `Active Agents`, and `Live DB counts`.
+  - Expanded `/api/admin/stats` to return live SQLite-derived values with `source=live_sqlite` and `generated_at`.
+  - Verified the live Admin stats API matches direct SQL exactly: `77` total users, `75` active users, `2` inactive users, `59` active agents, `8` teams, `4` brokerages, `1` pending user, and `2` test accounts.
+  - Fixed the `vesta-platform` service status signal so the running API reports active instead of falsely depending on a mismatched user systemd unit.
+  - Deployed the updated Admin bundle to `https://vesta-tech.net/admin`; current bundle is `/api/ui/assets/index-AyhKiC9Q.js`.
 - Cleaned remaining live Admin/database branding bleed:
   - Updated the default brokerage label in the app database from `Michigan Top Producers` to `Vesta Platform`.
   - Updated the default admin team label in the app database from `Elite Team` to `Core Operations`.
