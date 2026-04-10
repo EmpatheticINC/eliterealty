@@ -83,6 +83,23 @@ Date: 2026-04-10
   - redeployed the production React bundle to `https://vesta-tech.net/admin`
   - verified the live Admin route now loads `/api/ui/assets/index-Dh-46mQT.js`
   - verified lint/build pass and the API health check remains OK
+- Fixed the live Admin `Loading…` / stale behavior report:
+  - Confirmed the real production admin account is `aiden@vesta-tech.net`.
+  - Confirmed `aiden.h.huynh@gmail.com` and `empathetic.inc@gmail.com` are test accounts, not production master admins.
+  - Removed `empathetic.inc@gmail.com` from the master-admin allowlist in `/home/empathetic/.openclaw/workspace/auth/session.py`.
+  - Updated OAuth session routing in `/home/empathetic/.openclaw/workspace/api/routers/auth.py` so `system_admin` users land on `/admin` instead of `/chat`.
+  - Updated `/home/empathetic/.openclaw/workspace/vesta-app/src/App.jsx` so a `system_admin` session redirects to `/admin` before tenant pages such as Chat can mount.
+  - Kept the earlier Layout guard in `/home/empathetic/.openclaw/workspace/vesta-app/src/components/Layout.jsx` so system admins do not poll tenant pipeline/onboarding/SSE endpoints.
+  - Rebuilt and redeployed the production React bundle; live `/admin` now serves `/api/ui/assets/index-CcYHGCXs.js`.
+  - Restarted the Uvicorn API with `setsid`; health check returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - Verified a generated `aiden@vesta-tech.net` system-admin session can call `/auth/me`, `/api/admin/stats`, `/api/admin/system`, and `/api/admin/users` with HTTP 200.
+  - Verified `/app/app.html` still redirects to `https://vesta-tech.net/chat`.
+- Cleaned remaining live Admin/database branding bleed:
+  - Updated the default brokerage label in the app database from `Michigan Top Producers` to `Vesta Platform`.
+  - Updated the default admin team label in the app database from `Elite Team` to `Core Operations`.
+  - Verified the Admin users API no longer returns `Michigan Top Producers` or `Elite Team`.
+  - Removed stale public `Junk` signature HTML files under `/home/empathetic/html/vesta-tech/Junk` that still contained old affiliation text.
+  - Re-ran an active-path branding search across production app source, API static bundle, and the public marketing directory; no active matches remained for `Michigan Top Producers`, `Elite Team`, `Elite Real Estate Teams`, `Built for Elite`, or `Top Producers`.
 - Replaced placeholder branding on `vesta-tech.net` with a proper reusable logo system:
   - `logo-mark.svg`
   - `logo-wordmark.svg`
