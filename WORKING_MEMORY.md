@@ -77,6 +77,12 @@ Date: 2026-04-10
 - Updated `/app` and `/app/*` compatibility routes in `/home/empathetic/.openclaw/workspace/api/app.py` so old links redirect into the current production React app instead of legacy static shells.
 - Restarted the Uvicorn API process so the compatibility redirects are active.
 - Verified `https://vesta-tech.net/app/app.html` now resolves to `https://vesta-tech.net/chat`, and `https://vesta-tech.net/admin` still loads the upgraded `index-Bt6_cxVV.js` bundle.
+- Completed final Phase 2 Admin polish:
+  - added visible `System Admin only`, `No client pipeline access`, and `Current route: /admin` badges
+  - added Admin actions for reviewing pending users, opening the audit trail, exporting the filtered audit CSV, and copying the active `/admin` URL
+  - redeployed the production React bundle to `https://vesta-tech.net/admin`
+  - verified the live Admin route now loads `/api/ui/assets/index-Dh-46mQT.js`
+  - verified lint/build pass and the API health check remains OK
 - Replaced placeholder branding on `vesta-tech.net` with a proper reusable logo system:
   - `logo-mark.svg`
   - `logo-wordmark.svg`
