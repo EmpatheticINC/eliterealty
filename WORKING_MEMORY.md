@@ -559,3 +559,36 @@ Date: 2026-04-10
   - API log showed an external request to `/api/demo/snapshot` returning 404. That route is intentionally removed/old; not a blocker for production P4.
 - P4 next suggested slice:
   - Investor read-only dashboard route or production-safe `vesta-api.service` cleanup.
+
+## 2026-04-10 P4 Admin Navigation Consolidation
+
+- User asked to move the Admin page section navigation into the far-left sidebar because the single `Admin` nav item was wasting space while the real Admin sections sat in a second inner sidebar.
+- Frontend files changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/Layout.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/AdminPanel.jsx`
+- Changed Admin layout:
+  - Far-left app sidebar now shows `Vesta Admin` / `Control Center` for system admins.
+  - Far-left app sidebar now contains the Admin sections directly:
+    - `Operations` / `Overview`
+    - `Access` / `Members`
+    - `Health` / `System`
+    - `Investor` / `ROI`
+    - `Trail` / `Audit`
+  - Removed the duplicate inner Admin page sidebar.
+  - Admin main content now uses the full remaining width.
+- Routing:
+  - Admin sections now use URL query tabs:
+    - `/admin?tab=overview`
+    - `/admin?tab=members`
+    - `/admin?tab=system`
+    - `/admin?tab=roi`
+    - `/admin?tab=audit`
+  - Admin tab state is derived directly from the URL query, avoiding local tab-sync effects.
+  - Mobile still has a top select control for changing Admin sections.
+- Verification:
+  - `npm run lint`
+  - `npm run build`
+  - `npm run deploy`
+  - `/health` returned OK.
+  - Live bundle: `/api/ui/assets/index-D9zYon8p.js`.
+  - Live static bundle: `/home/empathetic/html/vesta-tech/assets/index-D9zYon8p.js`.
