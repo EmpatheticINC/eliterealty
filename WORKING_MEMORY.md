@@ -157,11 +157,43 @@ Date: 2026-04-10
 
 - Phase 1: Executive ROI Layer — complete
 - Phase 2: Team Efficiency ROI — complete
-- Phase 3: Lead-Level Revenue Protection — next
+- Phase 3: Lead-Level Revenue Protection — started
 - Phase 4: Market Positioning + Product Proof — pending
 
 ## Immediate Next Steps
 
 - In Cloudflare DNS for `vesta-tech.net`, add a TXT record at `@` with value `openai-domain-verification=dv-Nz0VOpJk3FDB6xVDYTGJcdfD`.
 - After DNS propagation, re-check the public TXT record and complete the OpenAI-side verification.
-- Continue production work with Phase 3: lead-level revenue protection inside the app.
+- Continue production work with Phase 3 by expanding the revenue-protection layer into stronger broker/admin rollups and trend proof.
+
+## 2026-04-10 P3 Revenue Protection Build
+
+- Built the first P3 slice: Lead-Level Revenue Protection for the production Pipeline.
+- Backend file changed: `/home/empathetic/.openclaw/workspace/api/routers/pipeline.py`.
+- Frontend file changed: `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/Pipeline.jsx`.
+- Added live per-lead `revenue_protection` data based on actual lead budget, stage probability, score, and last-contact SLA, not fabricated demo values.
+- Revenue model:
+  - estimated home value = parsed lead budget, falling back to `320000` only when no usable budget exists
+  - commission rate = `2.5%`
+  - stage probability varies by real stage, from `4%` new to `100%` closed
+  - weighted GCI = home value x commission rate x stage probability
+  - revenue at risk only appears when warm/hot leads breach the last-contact SLA
+- Added aggregate `revenue_protection` data to `/api/pipeline/stats`:
+  - `revenue_at_risk`
+  - `critical_revenue_at_risk`
+  - `at_risk_leads`
+  - `protected_weighted_gci`
+  - `source=budget_x_commission_x_stage_probability`
+- Added revenue-protection pills to hot leads, board cards, and list rows when a lead has revenue at risk.
+- Added a Pipeline `Revenue Protection` stats strip with at-risk dollars, SLA flags, and protected weighted GCI.
+- Added a lead-detail `Revenue Protection` card showing estimated GCI, stage weight, last touch, SLA label, and recommended action.
+- Verification completed:
+  - `python3 -m compileall -q /home/empathetic/.openclaw/workspace/api /home/empathetic/.openclaw/workspace/auth`
+  - `npm run lint`
+  - `npm run build`
+  - `npm run deploy`
+  - API restart and `/health` check passed
+  - Live `/pipeline?fresh=p3` serves `/api/ui/assets/index-3QRCBEe5.js`
+  - Live bundle contains `Revenue Protection`, `Revenue at risk`, `lead SLA flags`, `budget x`, and `revenue_protection`
+  - John Doe test scope verified through API token: `79` leads, `0` at-risk dollars, `0` SLA flags, and `$177,906` protected weighted GCI
+- Important truthfulness note: John Doe's current scoped data correctly shows `$0` revenue at risk because his hot leads are recently contacted/protected; this should stay truthful rather than padded.
