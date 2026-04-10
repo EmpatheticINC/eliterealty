@@ -52,6 +52,9 @@ Date: 2026-04-10
 - Confirmed broker and lead workflows are materially built, but the app still presents more like an operator console than an investor-value product.
 - Identified the main product gap as proof of financial return, payback, conversion lift, and retained revenue not being surfaced prominently enough.
 - Identified the main implementation gap as revenue evidence being present in the broker portal but fragmented across tabs and not turned into a simple executive value story.
+- Implemented Phase 1 in the production app: executive ROI layer added to Broker Portal overview using live metrics already available in `/api/broker/overview`, `/api/broker/pipeline_value`, and `/api/broker/revenue`.
+- Implemented Phase 2 in the production app: team efficiency ROI layer added to Team Portal overview using existing team metrics for load per agent, hot lead pressure, actions per agent, approval load, stale rate, and sender readiness.
+- Verified both Phase 1 and Phase 2 changes with `npm run build` and `npm run lint` in `/home/empathetic/.openclaw/workspace/vesta-app`.
 
 ## Operating Rule Going Forward
 
@@ -70,3 +73,10 @@ Date: 2026-04-10
   - automation savings in dollars, not only hours
   - conversion lift and response-time proof
   - simple payback framing per team and per seat
+
+## ROI Phases
+
+- Phase 1: Executive ROI Layer — complete
+- Phase 2: Team Efficiency ROI — complete
+- Phase 3: Lead-Level Revenue Protection — next
+- Phase 4: Market Positioning + Product Proof — pending
