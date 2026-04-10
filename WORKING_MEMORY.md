@@ -48,6 +48,10 @@ Date: 2026-04-10
 - Pushed `track-3` to GitHub.
 - Confirmed with user that the real priority is production, not demo.
 - Added this file so project memory persists in the repo.
+- Reviewed the current production app in `/home/empathetic/.openclaw/workspace/vesta-app` with an investor-ROI lens.
+- Confirmed broker and lead workflows are materially built, but the app still presents more like an operator console than an investor-value product.
+- Identified the main product gap as proof of financial return, payback, conversion lift, and retained revenue not being surfaced prominently enough.
+- Identified the main implementation gap as revenue evidence being present in the broker portal but fragmented across tabs and not turned into a simple executive value story.
 
 ## Operating Rule Going Forward
 
@@ -60,4 +64,9 @@ Date: 2026-04-10
 
 ## Next Recommended Step
 
-- Audit the production app structure and wire the intended production experience into the actual entry flow, instead of leaving the richer assets disconnected from `index.html`.
+- Prioritize an investor-facing ROI layer inside the production app:
+  - executive summary strip
+  - retained revenue / revenue at risk delta
+  - automation savings in dollars, not only hours
+  - conversion lift and response-time proof
+  - simple payback framing per team and per seat
