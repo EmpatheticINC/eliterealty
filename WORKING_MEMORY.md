@@ -271,3 +271,45 @@ Date: 2026-04-10
 - Remaining P3 recommendation:
   - Add a true investor-facing ROI proof panel that compares protected revenue, automation value, and deduped CRM contact coverage over time.
   - Later harden `api/fub_sync.py` so the same FUB contact is not inserted once per connected test owner when the brokerage wants shared broker-level rollups.
+
+## 2026-04-10 P3 Investor ROI Proof and FUB Sync Guard
+
+- Continued remaining P3 work after broker revenue dedupe.
+- Backend file changed: `/home/empathetic/.openclaw/workspace/api/fub_sync.py`.
+- Frontend file changed: `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/BrokerPortal.jsx`.
+- Added an `Investor ROI Proof` strip to the Broker Overview executive snapshot:
+  - Protected Pipeline
+  - Risk Exposure
+  - Automation Leverage
+  - Data Integrity
+- The visible investor readout now explicitly says broker revenue projections use distinct FUB contacts so duplicated owner imports do not inflate ROI.
+- Hardened FUB sync matching:
+  - Existing lead lookup now matches by `fub_id + team_id + brokerage_id`, preferring the current owner only for tie-breaking.
+  - Sync updates no longer overwrite an existing lead owner unless the owner is blank.
+  - This should stop the same CRM contact from being newly inserted once per connected John/Jane owner going forward.
+- I did not delete the existing 92 legacy owner rows in this pass because pipeline user/team visibility still needs to be handled carefully. Broker ROI math already reads the truthful deduped contact basis.
+- Verification:
+  - `python3 -m compileall -q api/fub_sync.py api/routers/broker_portal.py`
+  - `npm run lint`
+  - `npm run build`
+  - `npm run deploy`
+  - API restarted and `/health` returned OK.
+  - Live bundle: `/api/ui/assets/index-BigjuVPJ.js`.
+  - Live bundle contains `Investor ROI Proof`, `rows normalized`, and `distinct FUB contacts`.
+  - Active production users are still exactly:
+    - `aiden@vesta-tech.net` as system admin
+    - `aiden.h.huynh@gmail.com` as head broker test account
+    - `empathetic.inc@gmail.com` as team lead test account
+  - John Doe broker API verification: `/overview`, `/pipeline_value`, `/revenue`, `/briefing`, `/trends`, `/teams`, `/activity`, `/leaderboard`, and `/health` all returned HTTP 200.
+  - Verified current truthful ROI basis:
+    - raw lead rows: `92`
+    - distinct FUB contacts: `46`
+    - duplicate owner rows: `46`
+    - overview total leads: `46`
+    - hot leads: `3`
+    - GCI at risk: `$0`
+    - weighted pipeline total GCI: `$160,336`
+    - pipeline GCI: `$77,794`
+- Remaining P3 recommendation:
+  - Decide whether to run a careful one-time historical lead-row dedupe. If we do it, verify agent/team lead pipeline visibility first so we do not accidentally hide shared test CRM contacts from Jane or future agent scopes.
+  - Next value slice can be ROI trend history over time, not just a point-in-time proof card.
