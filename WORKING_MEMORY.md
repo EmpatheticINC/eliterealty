@@ -449,3 +449,53 @@ Date: 2026-04-10
   - Current production API is the direct Uvicorn `api.app:app` process on `127.0.0.1:8080`.
 - P4 next suggested slice:
   - Investor reporting/ROI assumptions controls and export-ready proof points.
+
+## 2026-04-10 P4 Investor Proof Pack
+
+- Continued P4 by adding an investor-safe reporting/export slice to the Broker Revenue tab.
+- Frontend file changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/BrokerPortal.jsx`
+- Added:
+  - `Export investor snapshot` button in the Revenue hero.
+  - `Investor Report Pack` panel below the ROI trend panel.
+  - `Download CSV proof pack` action.
+- CSV export contains aggregate-only ROI proof points:
+  - generated timestamp
+  - brokerage name
+  - total projected GCI
+  - closed GCI
+  - pipeline GCI
+  - annual pace
+  - annual target
+  - annual target gap
+  - protected pipeline
+  - revenue at risk
+  - hot leads needing follow-up
+  - automation hours saved in 30 days
+  - loaded hourly cost assumption
+  - automation value in 30 days
+  - AI drafts in 7 days
+  - AI approval rate
+  - lead count basis
+  - distinct FUB contacts
+  - raw owner rows
+  - ROI snapshots captured
+  - commission rate percent
+- Privacy posture:
+  - No client names, contact names, phone/email, pipeline row details, or client-level drilldown are exported.
+  - The report is intentionally broker/investor-level aggregate proof only.
+- Verification:
+  - `npm run lint`
+  - `npm run build`
+  - `npm run deploy`
+  - `/health` returned OK.
+  - Live bundle: `/api/ui/assets/index-C04iFEch.js`.
+  - Live static bundle: `/home/empathetic/html/vesta-tech/assets/index-C04iFEch.js`.
+  - Verified live bundle contains `Investor Report Pack`, `Export investor snapshot`, `Download CSV proof pack`, and `Trend Integrity`.
+- P4 status:
+  - Reliability/ops signals shipped.
+  - Investor-safe ROI proof/export shipped.
+  - Next P4 candidates:
+    - Admin-level ROI assumptions settings if assumptions need to be editable rather than hardcoded.
+    - Investor read-only dashboard route if Aiden wants external access later.
+    - Replace direct Uvicorn process management with a clean production-safe `vesta-api.service` once systemd env is corrected.
