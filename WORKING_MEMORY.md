@@ -70,6 +70,13 @@ Date: 2026-04-10
 - Updated the app deploy script to clear stale `index-*` JS/CSS bundles before copying the current build so old branded bundles do not remain publicly accessible after deploys.
 - Removed the old public `index.v1.0.backup.html` file because it contained retired brokerage/team branding and was still web-accessible.
 - Gracefully reloaded the running Uvicorn API parent with `SIGHUP`; health check remained OK afterward.
+- Removed stale legacy app entrypoints that could confuse production testing:
+  - `/home/empathetic/.openclaw/workspace/api/static/app.html`
+  - `/home/empathetic/html/vesta-tech/app/app.html`
+  - `/home/empathetic/html/vesta-tech/app/index.html`
+- Updated `/app` and `/app/*` compatibility routes in `/home/empathetic/.openclaw/workspace/api/app.py` so old links redirect into the current production React app instead of legacy static shells.
+- Restarted the Uvicorn API process so the compatibility redirects are active.
+- Verified `https://vesta-tech.net/app/app.html` now resolves to `https://vesta-tech.net/chat`, and `https://vesta-tech.net/admin` still loads the upgraded `index-Bt6_cxVV.js` bundle.
 - Replaced placeholder branding on `vesta-tech.net` with a proper reusable logo system:
   - `logo-mark.svg`
   - `logo-wordmark.svg`
