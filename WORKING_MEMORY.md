@@ -104,6 +104,15 @@ Date: 2026-04-10
   - Verified the live Admin stats API matches direct SQL exactly: `77` total users, `75` active users, `2` inactive users, `59` active agents, `8` teams, `4` brokerages, `1` pending user, and `2` test accounts.
   - Fixed the `vesta-platform` service status signal so the running API reports active instead of falsely depending on a mismatched user systemd unit.
   - Deployed the updated Admin bundle to `https://vesta-tech.net/admin`; current bundle is `/api/ui/assets/index-AyhKiC9Q.js`.
+- Added Admin control for deleting pending platform members:
+  - Added backend route `POST /api/admin/users/delete-pending`.
+  - The route is system-admin only, re-checks the master admin email, and only allows deleting users with `role='pending'` and no `onboarded_at`.
+  - The route blocks non-pending users, system admin, Jane Doe, John Doe, and onboarded accounts from this delete path.
+  - It safely detaches/deletes pending-user session/activity references and writes an `admin_pending_user_deleted` audit event.
+  - Added a `Delete Pending` button to pending rows in the Admin member roster.
+  - Added the audit label `Pending user deleted` and included this event in the Admin audit feed.
+  - Verified with a disposable pending smoke account: delete returned HTTP 200, the row was removed, the audit event was written, and deleting John Doe returned HTTP 403.
+  - Redeployed the Admin bundle; current live bundle is `/api/ui/assets/index-BO89WjB5.js`.
 - Cleaned remaining live Admin/database branding bleed:
   - Updated the default brokerage label in the app database from `Michigan Top Producers` to `Vesta Platform`.
   - Updated the default admin team label in the app database from `Elite Team` to `Core Operations`.
