@@ -560,6 +560,50 @@ Date: 2026-04-10
 - P4 next suggested slice:
   - Investor read-only dashboard route or production-safe `vesta-api.service` cleanup.
 
+## 2026-04-10 P4 Production API Service Cleanup
+
+- Continued P4 with production API service cleanup so API restarts are systemd-managed instead of relying on a manually launched Uvicorn process.
+- User-level systemd files changed:
+  - `/home/empathetic/.config/systemd/user/vesta-api.service`
+  - `/home/empathetic/.config/systemd/user/cloudflared.service`
+  - `/home/empathetic/.config/systemd/user/vesta-platform.service`
+- Backups created before editing:
+  - `/home/empathetic/.config/systemd/user/vesta-api.service.bak.20260410T235818Z`
+  - `/home/empathetic/.config/systemd/user/cloudflared.service.bak.20260410T235818Z`
+  - `/home/empathetic/.config/systemd/user/vesta-platform.service.bak.20260410T235818Z`
+- `vesta-api.service` is now the production API unit:
+  - `WorkingDirectory=/home/empathetic/.openclaw/workspace`
+  - `EnvironmentFile=/home/empathetic/.openclaw/env`
+  - `ExecStart=/home/empathetic/.local/bin/uvicorn api.app:app --host 127.0.0.1 --port 8080 --workers 2 --no-server-header`
+  - logs append to `/tmp/vesta-api.log`
+  - includes `NoNewPrivileges=yes` and `PrivateTmp=yes`
+- `cloudflared.service` now depends on `vesta-api.service` instead of the legacy `vesta-platform.service`.
+- `vesta-platform.service` was renamed in description as a legacy demo API unit and disabled.
+- Production API process is now managed by:
+  - `systemctl --user restart vesta-api.service`
+  - `systemctl --user status vesta-api.service --no-pager`
+- Avoid using the old direct Uvicorn restart pattern except as an emergency fallback.
+- Avoid using `vesta-platform.service` for production because it still contains demo isolation environment settings.
+- Verification:
+  - `systemctl --user daemon-reload`
+  - `systemctl --user disable vesta-platform.service`
+  - stopped the previous manually launched Uvicorn process
+  - `systemctl --user restart vesta-api.service`
+  - `systemctl --user status vesta-api.service` reported active/running
+  - `/health` returned OK
+  - `systemctl --user is-enabled`:
+    - `vesta-api.service`: enabled
+    - `vesta-platform.service`: disabled
+    - `cloudflared.service`: enabled
+  - `systemctl --user is-active`:
+    - `vesta-api.service`: active
+    - `vesta-platform.service`: inactive
+    - `cloudflared.service`: active
+  - Authenticated `/api/admin/system` returned HTTP 200 and reported `vesta-api: active`.
+  - Authenticated `/api/broker/health` returned HTTP 200 and reported `vesta-api: active`.
+- Current production API parent after service restart:
+  - PID `699865`
+
 ## 2026-04-10 P4 Admin Navigation Consolidation
 
 - User asked to move the Admin page section navigation into the far-left sidebar because the single `Admin` nav item was wasting space while the real Admin sections sat in a second inner sidebar.
