@@ -499,3 +499,63 @@ Date: 2026-04-10
     - Admin-level ROI assumptions settings if assumptions need to be editable rather than hardcoded.
     - Investor read-only dashboard route if Aiden wants external access later.
     - Replace direct Uvicorn process management with a clean production-safe `vesta-api.service` once systemd env is corrected.
+
+## 2026-04-10 P4 ROI Assumptions Controls
+
+- Continued P4 by making investor ROI assumptions configurable instead of hardcoded.
+- Backend files changed:
+  - `/home/empathetic/.openclaw/workspace/api/roi_assumptions.py`
+  - `/home/empathetic/.openclaw/workspace/api/routers/admin.py`
+  - `/home/empathetic/.openclaw/workspace/api/routers/broker_portal.py`
+- Frontend files changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/AdminPanel.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/BrokerPortal.jsx`
+- Added shared `platform_settings`-backed ROI assumption storage:
+  - `commission_rate`
+  - `default_home_value`
+  - `quarterly_gci_target`
+  - `annual_gci_target`
+  - `loaded_hourly_cost`
+- Defaults are still production-conservative:
+  - commission rate: `0.025` / `2.5%`
+  - fallback home value: `$320,000`
+  - quarterly GCI target: `$300,000`
+  - annual GCI target: `$1,200,000`
+  - loaded hourly cost: `$50`
+- Admin API:
+  - `GET /api/admin/roi-assumptions`
+  - `POST /api/admin/roi-assumptions`
+  - `/api/admin/system` now includes `roi_assumptions`.
+  - Updates are audit logged as `admin_roi_assumptions_updated`.
+- Broker API:
+  - Broker revenue, briefing revenue math, pipeline value math, and automatic ROI snapshot capture now read the shared assumptions.
+  - `/api/broker/revenue` now returns an `assumptions` object for the frontend/export.
+- Admin panel:
+  - Added left-nav `ROI` tab under `Investor`.
+  - Added `Revenue model controls` summary cards.
+  - Added editable controls and save/reload actions for ROI assumptions.
+- Broker portal:
+  - Revenue overview/export now uses the backend `loaded_hourly_cost` instead of a frontend-only hardcoded constant.
+  - Investor report copy now points to the admin ROI assumptions panel.
+- Verification:
+  - `python3 -m compileall -q api/roi_assumptions.py api/routers/admin.py api/routers/broker_portal.py api/app.py`
+  - `npm run lint`
+  - `npm run build`
+  - `npm run deploy`
+  - API restarted and `/health` returned OK.
+  - Authenticated `GET /api/admin/roi-assumptions` returned HTTP 200.
+  - Authenticated `GET /api/admin/system` returned HTTP 200 and included `roi_assumptions`.
+  - Authenticated `GET /api/broker/revenue` returned HTTP 200 and included the assumption payload.
+  - Authenticated `POST /api/admin/roi-assumptions` returned HTTP 200 using the same current values as a safe save-path test.
+  - Live bundle: `/api/ui/assets/index-CO3_oumI.js`.
+  - Live static bundle: `/home/empathetic/html/vesta-tech/assets/index-CO3_oumI.js`.
+- Current live ROI values after save-path smoke:
+  - commission rate: `0.025`
+  - fallback home value: `$320,000`
+  - quarterly GCI target: `$300,000`
+  - annual GCI target: `$1,200,000`
+  - loaded hourly cost: `$50`
+- Note:
+  - API log showed an external request to `/api/demo/snapshot` returning 404. That route is intentionally removed/old; not a blocker for production P4.
+- P4 next suggested slice:
+  - Investor read-only dashboard route or production-safe `vesta-api.service` cleanup.
