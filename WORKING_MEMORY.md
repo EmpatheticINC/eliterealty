@@ -1297,3 +1297,65 @@ Date: 2026-04-10
 - P8Q2 status:
   - Complete unless we want to tune scoring thresholds after observing live usage.
   - Next suggested slice: P8Q3 investor ROI proof layer.
+
+## 2026-04-11 P8Q3: Investor ROI Proof Layer
+
+- Continued and completed P8Q3: stronger investor-facing proof that ties ROI math to production operating leverage.
+- Backend files changed:
+  - `/home/empathetic/.openclaw/workspace/api/routers/investor.py`
+- Frontend files changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorDashboard.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorSharePage.jsx`
+- Backend changes:
+  - Added aggregate `proof` block to `/api/investor/snapshot` and public investor snapshots.
+  - `proof` includes:
+    - `target_coverage_pct`
+    - `automation_hours_saved_30d`
+    - `automation_value_30d`
+    - `ai_drafts_30d`
+    - `ai_queries_30d`
+    - `awaiting_approvals`
+    - `approval_rate_30d`
+    - `approved_30d`
+    - `rejected_30d`
+    - aggregate `cma_jobs`
+    - investor-facing `points`
+  - CSV export now includes proof metrics and proof-point rows.
+  - Scope remains platform aggregate for system admin and brokerage aggregate for broker/public brokerage share scopes.
+  - Investor payload remains aggregate-only and does not include client records, client names, recipient emails, message bodies, lead names, phone numbers, or CMA file URLs.
+- Frontend changes:
+  - Investor Dashboard now includes a `P8 Investor Proof Layer` / operating leverage section.
+  - Public Investor Share Page now includes an `Operating Leverage Proof` section.
+  - Copyable investor memo now includes automation value, estimated hours saved, AI drafts, and approval rate.
+  - Proof cards show target coverage, automation value, AI throughput, data integrity, approval discipline, and CMA reliability using aggregate-only data.
+- Deployment:
+  - `npm run deploy` completed.
+  - API restarted through `vesta-api.service`.
+  - Current production API parent PID after restart: `1789587`.
+  - Live bundle:
+    - `/api/ui/assets/index-DQ3m2wzU.js`
+  - Live CSS:
+    - `/api/ui/assets/index-HJm1RlyG.css`
+- Verification:
+  - `python3 -m py_compile /home/empathetic/.openclaw/workspace/api/routers/investor.py`
+  - `npm run lint`
+  - `npm run build`
+  - `npm run deploy`
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}` after API restart.
+  - Authenticated system admin smoke verified `/api/investor/snapshot` includes `proof`, 4 proof points, and privacy flags.
+  - CSV smoke verified proof rows are included in `/api/investor/snapshot.csv`.
+  - Temporary public share-link smoke verified public investor snapshot includes `proof`.
+  - Temporary share link was revoked and smoke check verified `0` active `P8Q3 smoke link` rows.
+  - Exact recursive privacy-key smoke verified no forbidden keys were present in investor snapshot:
+    - `client_name`
+    - `to_email`
+    - `file_url`
+    - `lead_name`
+    - `phone`
+    - `body`
+    - `subject`
+    - `content`
+    - `address`
+- P8Q3 status:
+  - Complete.
+  - Next suggested slice: P8Q4 manual browser QA + UX cleanup.
