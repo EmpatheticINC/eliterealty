@@ -2111,3 +2111,69 @@ Date: 2026-04-10
   - Pipeline compose modal split complete
 - Next recommended slice:
   - move to P3Q4 Admin/Team/Settings split unless we specifically want to keep digging into the lead detail panel, which is larger and riskier.
+
+## 2026-04-11 P3Q4: Admin, Team, Settings Frontend Split
+
+- Completed the first conservative P3Q4 split across Admin, Team, and Settings and deployed it live.
+- Production frontend source files changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/AdminPanel.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/TeamPortal.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/Settings.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/admin/AdminPrimitives.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/team/TeamPrimitives.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/settings/SettingsPrimitives.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/utils/adminDisplay.js`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/utils/teamDisplay.js`
+- Added component directories:
+  - `src/components/admin/`
+  - `src/components/team/`
+  - `src/components/settings/`
+- Admin extraction:
+  - moved `ROLES`, `NAV_ITEMS`, `DEFAULT_ROI_FORM`, `ROI_FIELDS`, `SERVICE_DISPLAY`, `AUDIT_LABELS` into `src/utils/adminDisplay.js`
+  - moved admin format/tone helpers into `src/utils/adminDisplay.js`
+  - moved `MetricCard`, `CompactCount`, and `ServiceRow` into `src/components/admin/AdminPrimitives.jsx`
+- Team extraction:
+  - moved team date/time, one-decimal, feed, action color, and KPI style helpers into `src/utils/teamDisplay.js`
+  - moved `KPICard`, `SkeletonCard`, `SetupBadge`, and `GapBadge` into `src/components/team/TeamPrimitives.jsx`
+- Settings extraction:
+  - moved `Toggle`, `Section`, `Row`, and `InfoCard` into `src/components/settings/SettingsPrimitives.jsx`
+- Behavior intentionally preserved:
+  - no admin API calls changed
+  - no team API calls changed
+  - no settings API calls changed
+  - no admin client/pipeline visibility was added
+  - admin member controls unchanged
+  - pending member delete behavior unchanged
+  - admin ROI assumption save behavior unchanged
+  - team invite, approval, leaderboard, briefing, and activity behavior unchanged
+  - settings FUB, sender, comms, skill, push, and logout behavior unchanged
+  - no backend source changed
+- File-size movement:
+  - `AdminPanel.jsx` was `963` lines before P3Q4 and is now `829` lines
+  - `TeamPortal.jsx` was `1,253` lines before P3Q4 and is now `1,114` lines
+  - `Settings.jsx` was `1,074` lines before P3Q4 and is now `1,018` lines
+  - `AdminPrimitives.jsx` is `38` lines
+  - `TeamPrimitives.jsx` is `48` lines
+  - `SettingsPrimitives.jsx` is `52` lines
+  - `adminDisplay.js` is `115` lines
+  - `teamDisplay.js` is `98` lines
+- Verification:
+  - Pre-change `python3 scripts/vesta_smoke.py` passed with `26 passed, 0 failed`.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `npm run deploy` passed.
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - `/admin`, `/team`, and `/settings` returned HTTP `200`.
+  - Post-change `python3 scripts/vesta_smoke.py` passed with `26 passed, 0 failed`.
+- Deployed bundle:
+  - `/api/ui/assets/index-BCYaHBdt.js`
+  - `/api/ui/assets/index-Dhik9vt-.css`
+- P3Q4 status:
+  - first Admin/Team/Settings simplification split complete
+- P3 status:
+  - P3Q1 shared frontend format utilities complete
+  - P3Q2 Broker Portal splits complete
+  - P3Q3 Pipeline splits complete
+  - P3Q4 first Admin/Team/Settings split complete
+- Next recommended slice:
+  - close P3 or do a second P3Q4 pass that extracts one medium Admin tab panel, likely ROI controls or Audit trail, if we want the admin page smaller before moving to the next phase.
