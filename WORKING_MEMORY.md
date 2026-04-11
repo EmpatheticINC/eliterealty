@@ -1780,3 +1780,57 @@ Date: 2026-04-10
 - No frontend build or deploy was needed.
 - Next recommended slice:
   - P2Q4 Investor aggregate proof/snapshot builder boundary.
+
+## 2026-04-11 P2Q4: Investor Aggregate Proof Builder Boundary
+
+- Completed P2Q4 backend-only investor snapshot/proof builder extraction.
+- Production source files changed:
+  - `/home/empathetic/.openclaw/workspace/api/investor_snapshot_builder.py`
+  - `/home/empathetic/.openclaw/workspace/api/routers/investor.py`
+- Added shared aggregate-only investor snapshot builder module:
+  - `api/investor_snapshot_builder.py`
+- New shared functions:
+  - `snapshot_scope(user)`
+  - `build_investor_snapshot(user, conn, share_scope=None)`
+- Investor router now imports compatibility alias:
+  - `from api.investor_snapshot_builder import build_investor_snapshot as _build_investor_snapshot`
+- Existing route call sites were left intact:
+  - `/api/investor/snapshot`
+  - `/api/investor/snapshot.csv`
+  - `/api/investor/public/{token}`
+  - `/api/investor/public`
+- Router responsibilities intentionally preserved:
+  - authenticated route wiring
+  - CSV response construction
+  - share-link table creation
+  - token hashing
+  - share create/list/revoke behavior
+  - public token validation/expiration/revocation behavior
+  - audit logging
+- Behavior intentionally preserved:
+  - investor response envelope unchanged
+  - aggregate-only `summary`, `proof`, `brokerages`, `history`, `assumptions`, and `privacy` sections unchanged
+  - public share-token behavior untouched
+  - CSV column meanings untouched
+  - admin privacy boundaries untouched
+  - no client-level data visibility introduced
+  - Broker, Pipeline, FUB sync, ownership, and dedupe untouched
+- Verification:
+  - Pre-change `python3 scripts/vesta_smoke.py` passed with `26 passed, 0 failed`.
+  - `python3 -m py_compile /home/empathetic/.openclaw/workspace/api/investor_snapshot_builder.py /home/empathetic/.openclaw/workspace/api/routers/investor.py` passed.
+  - Restarted `vesta-api.service`; service active and `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - Direct builder sanity check returned top-level keys `['assumptions', 'brokerages', 'generated_at', 'history', 'privacy', 'proof', 'role', 'scope', 'summary']`.
+  - Direct builder privacy check returned:
+    - `client_records_exposed: False`
+    - `client_names_exposed: False`
+    - forbidden client-style key hits: `[]`
+  - Post-change `python3 scripts/vesta_smoke.py` passed with `26 passed, 0 failed`.
+- No frontend source changed.
+- No frontend build or deploy was needed.
+- P2 status:
+  - P2Q1 complete: shared ROI math helper
+  - P2Q2 complete: revenue protection service boundary
+  - P2Q3 complete: broker ROI snapshot boundary
+  - P2Q4 complete: investor aggregate proof builder boundary
+- Next recommended phase:
+  - P3 frontend panel/component simplification, beginning with shared UI/formatting utilities.
