@@ -994,3 +994,49 @@ Date: 2026-04-10
   - `vesta-api.service` runs with `PrivateTmp=yes`, so shell-created files under `/tmp` are not visible to the API process. This is okay for real CMA jobs because the Saleswise generation and PDF download both run inside the API service's private temp scope, but smoke tests should not create fake files from the shell and expect `/api/chat/file/*` to see them.
 - P7 next suggested slice:
   - Add Admin/Broker visibility for recent CMA jobs and failures, plus an approval/email handoff from completed CMA jobs.
+
+## 2026-04-11 P7 Phase 2: CMA Operations Visibility
+
+- Continued P7 with the second slice: operational visibility for CMA/report generation.
+- Privacy boundary:
+  - System Admin sees aggregate CMA job health only.
+  - System Admin does not receive CMA client names, addresses, file URLs, or job-level rows.
+  - Head Broker sees brokerage-scoped CMA job rows because this is tenant-operational data for their brokerage.
+- Backend files changed:
+  - `/home/empathetic/.openclaw/workspace/api/routers/admin.py`
+  - `/home/empathetic/.openclaw/workspace/api/routers/broker_portal.py`
+- Frontend files changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/AdminPanel.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/BrokerPortal.jsx`
+- Admin changes:
+  - `/api/admin/system` now includes aggregate `CMA Jobs` in `automation`.
+  - The payload includes total, queued, running, completed, failed, latest timestamp, and latest failure timestamp.
+  - The Admin System tab renders those counts inside the `Automation Freshness` grid.
+  - `cma_jobs` is included in DB table counts, if the table exists.
+- Broker changes:
+  - `/api/broker/health` now includes brokerage-scoped `cma_jobs`.
+  - Broker health includes counts and the latest 10 recent CMA jobs for that brokerage.
+  - Recent broker rows include status, client name, address, requested-by, error, and PDF download link when completed.
+  - Broker System Health tab now has a `CMA Delivery` section with counts and recent job rows.
+  - Added `cma_generated` to valid broker activity action types.
+- Deployment:
+  - `npm run deploy` completed.
+  - API restarted through `vesta-api.service`.
+  - Current production API parent PID after restart: `1562439`.
+  - Live bundle:
+    - `/api/ui/assets/index-tWUhVZNL.js`
+  - Live CSS:
+    - `/api/ui/assets/index-k_DRHjCk.css`
+- Verification:
+  - `python3 -m py_compile /home/empathetic/.openclaw/workspace/api/routers/admin.py /home/empathetic/.openclaw/workspace/api/routers/broker_portal.py`
+  - `npm run lint`
+  - `npm run build`
+  - `npm run deploy`
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - Authenticated Admin smoke for `/api/admin/system` returned HTTP 200 and showed aggregate CMA counts only.
+  - Verified Admin response did not include the temporary smoke address or client name.
+  - Authenticated John Doe broker smoke for `/api/broker/health` returned HTTP 200 and showed brokerage-scoped CMA job details.
+  - Temporary failed CMA job smoke row was deleted after verification.
+  - Verified `0` remaining rows for the Phase 2 smoke CMA job/session.
+- P7 next suggested slice:
+  - Add approval/email handoff for completed CMA jobs so a broker can send the generated PDF through the existing approval-gated email flow, not directly to clients.
