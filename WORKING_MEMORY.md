@@ -929,3 +929,68 @@ Date: 2026-04-10
   - P6 can be considered complete.
   - No frontend deploy was needed in this closeout pass because there were no app source changes.
   - Next recommended phase can be P7: client-facing CMA/report delivery hardening, background-job reliability, or final launch packaging.
+
+## 2026-04-10 P7 Phase 1: CMA Background Job Flow
+
+- Started P7 as `Client-Facing Delivery + Launch Hardening`.
+- P7 Phase 1 goal:
+  - Stop Saleswise CMA generation from blocking the web chat request while Puppeteer runs.
+  - Give users a visible production-style job status and PDF-ready state.
+- Backend file changed:
+  - `/home/empathetic/.openclaw/workspace/api/routers/chat.py`
+- Frontend file changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/Chat.jsx`
+- Backend changes:
+  - Added `cma_jobs` storage with:
+    - `id`
+    - `user_id`
+    - `session_id`
+    - `client_name`
+    - `address`
+    - `status`
+    - `file_url`
+    - `file_name`
+    - `error`
+    - timestamps for created, started, and completed
+  - Added `GET /api/chat/cma-jobs/{job_id}`.
+  - Job status lookup is scoped to the authenticated user and still blocks `system_admin` from tenant/client data access.
+  - Chat CMA prompts with an address now queue a background CMA job and immediately return:
+    - `cma_job_id`
+    - `cma_status=queued`
+    - `cma_poll_url`
+  - Chat CMA prompts without an address now return a clear address-needed prompt and do not start Saleswise.
+  - Background CMA worker updates status to `running`, then `completed` with PDF metadata or `failed` with a safe error.
+  - Successful jobs write a `cma_generated` activity log event.
+- Frontend changes:
+  - Added a CMA status card in chat:
+    - `CMA queued`
+    - `Generating CMA`
+    - `CMA ready`
+    - `CMA needs attention`
+  - Chat polls `/api/chat/cma-jobs/{job_id}` every 5 seconds while a job is queued/running.
+  - When the job is completed, the card exposes `Download CMA PDF`.
+  - Added a state-change guard so polling does not re-render or re-poll aggressively when job status is unchanged.
+- Deployment:
+  - `npm run deploy` completed.
+  - Live bundle:
+    - `/api/ui/assets/index-B5e3_2ao.js`
+  - Live CSS:
+    - `/api/ui/assets/index-Bs0Gujlr.css`
+  - API restarted through `vesta-api.service`.
+  - Current production API parent PID after restart: `802581`.
+- Verification:
+  - `python3 -m py_compile /home/empathetic/.openclaw/workspace/api/routers/chat.py`
+  - `npm run lint`
+  - `npm run build`
+  - `npm run deploy`
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - Authenticated John Doe broker smoke verified:
+    - manually inserted completed `cma_jobs` row returned HTTP 200 through `/api/chat/cma-jobs/{job_id}`
+    - `POST /api/chat/message` with `run a cma` and no address returned a clean address-needed prompt with no queued job
+    - smoke job/session rows were deleted afterward
+  - Verified `cma_jobs` table exists and the smoke job/session cleanup left `0` smoke rows.
+  - Live `/chat` GET serves the SPA shell with the new bundle. `HEAD /chat` returns 405 from the SPA route, which is a route-method quirk and not a live app blocker.
+- Important note:
+  - `vesta-api.service` runs with `PrivateTmp=yes`, so shell-created files under `/tmp` are not visible to the API process. This is okay for real CMA jobs because the Saleswise generation and PDF download both run inside the API service's private temp scope, but smoke tests should not create fake files from the shell and expect `/api/chat/file/*` to see them.
+- P7 next suggested slice:
+  - Add Admin/Broker visibility for recent CMA jobs and failures, plus an approval/email handoff from completed CMA jobs.
