@@ -2438,3 +2438,61 @@ Date: 2026-04-10
 - Next shorthand:
   - `pp` should move to P5: Verification And Operational Hardening.
   - `go` would continue P4 only if we want an extra archive pass for stale disabled units/scripts, but the planned P4 quarters are complete.
+
+## 2026-04-11 P5Q1: Core Payload Contract Tests
+
+- Started P5Q1 after user sent `xx`.
+- P5 purpose from `SIMPLIFICATION_REFACTOR_PLAN.md`:
+  - Verification And Operational Hardening.
+- P5Q1 scope:
+  - Add focused contract tests for critical production payloads after the simplification/refactor work.
+  - Keep tests resilient to truthful live counts while locking required response keys and privacy-facing fields.
+- Production test file changed:
+  - `/home/empathetic/.openclaw/workspace/tests/test_api_integration.py`
+- Added `TestCorePayloadContracts` coverage for:
+  - Admin stats/system payload shape:
+    - `/api/admin/stats`
+    - `/api/admin/system`
+  - Broker ROI/health payload shape:
+    - `/api/broker/overview`
+    - `/api/broker/revenue`
+    - `/api/broker/health`
+  - Pipeline stats/detail payload shape:
+    - `/api/pipeline/stats`
+    - `/api/pipeline/lead/{fub_id}`
+  - Approvals visibility payload shape:
+    - `/api/approvals`
+  - Investor snapshot/share payload shape:
+    - `/api/investor/snapshot`
+    - `/api/investor/shares`
+    - `/api/investor/public`
+- Added a small `_ApiClient.delete()` helper to the integration test client so investor share links created by contract tests can be revoked during cleanup.
+- P5Q1 caught a real backend regression:
+  - `GET /api/pipeline/lead/{fub_id}` was returning HTTP `500` because it selected `queued_by_name` directly from `email_drafts`, but that column does not exist.
+- Production API source file changed:
+  - `/home/empathetic/.openclaw/workspace/api/routers/pipeline.py`
+- Fixed Pipeline lead detail pending-draft query:
+  - now selects pending draft fields from `email_drafts ed`
+  - joins `users u` via `ed.queued_by_user_id`
+  - returns `u.display_name AS queued_by_name`
+  - preserves the existing lead-detail payload contract.
+- Behavior intentionally preserved:
+  - no frontend source changed
+  - no frontend deploy required
+  - no data migration required
+  - `vesta-platform.service` was not touched
+- Production action:
+  - restarted only `vesta-api.service` so the Pipeline detail fix is live.
+- Verification:
+  - `python3 -m py_compile api/routers/pipeline.py tests/test_api_integration.py` passed from `/home/empathetic/.openclaw/workspace`.
+  - `python3 -m pytest tests/test_api_integration.py::TestCorePayloadContracts -v` passed with `5 passed`.
+  - `python3 -m pytest tests/test_api_integration.py::TestPipeline::test_lead_detail_separates_crm_notes_from_vesta_system_notes -v` passed with `1 passed`.
+  - `systemctl --user --no-pager status vesta-api.service` showed active/running after restart.
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - `python3 scripts/vesta_smoke.py --public-only` passed with `28 passed, 0 failed`.
+  - `python3 scripts/vesta_smoke.py` passed with `43 passed, 0 failed`.
+- P5Q1 status:
+  - complete
+- Next shorthand:
+  - `xx` should move to P5Q2: Privacy Regression Tests.
+  - `go` would continue P5Q1 with broader contract coverage, but the planned core payload contract slice is now in place and caught/fixed one live route bug.
