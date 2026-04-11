@@ -1359,3 +1359,46 @@ Date: 2026-04-10
 - P8Q3 status:
   - Complete.
   - Next suggested slice: P8Q4 manual browser QA + UX cleanup.
+
+## 2026-04-11 P8Q4: Final QA + P8 Closeout
+
+- Completed P8Q4 as the final production QA and UX cleanup pass for P8.
+- Frontend files changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/Layout.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorDashboard.jsx`
+- UX cleanup:
+  - Removed internal phase labels from production-facing investor UI:
+    - `P5 Investor View` -> `Investor View`
+    - `P6 Controlled Sharing` -> `Controlled Sharing`
+    - `P8 Investor Proof Layer` -> `Investor Proof Layer`
+    - Investor nav kicker `P5` -> `Proof`
+  - Verified no `P5`, `P6`, `P7`, or `P8` labels remain in production frontend/router source.
+- Verification:
+  - `python3 -m py_compile /home/empathetic/.openclaw/workspace/api/routers/investor.py /home/empathetic/.openclaw/workspace/api/routers/admin.py /home/empathetic/.openclaw/workspace/api/routers/broker_portal.py`
+  - `npm run lint`
+  - `npm run build`
+  - `npm run deploy`
+  - API restarted through `vesta-api.service`.
+  - Current production API parent PID after restart: `1896545`.
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}` after restart.
+  - Live bundle:
+    - `/api/ui/assets/index-6yDYarxu.js`
+  - Live CSS:
+    - `/api/ui/assets/index-Z12C3Yd8.css`
+- Final smoke checks:
+  - Admin system endpoint returned:
+    - `ops_overview.status='ready'`
+    - `ai_quality.status='needs_review'`
+    - no client-style keys in `ops_overview`
+  - Broker health endpoint returned DB `ok` and CMA counts with no stale/missing PDF jobs.
+  - Approvals endpoint returned 17 visible broker drafts and expected summary keys.
+  - Investor snapshot endpoint returned `proof`, 4 proof points, and privacy flag `client_records_exposed=False`.
+  - UI asset smoke verified the deployed bundle and CSS are reachable.
+  - Source scan verified no internal P-phase labels remain in production frontend/router source.
+- P8 status:
+  - P8 is complete:
+    - Q1 Production QA Command Center
+    - Q2 AI Quality Controls
+    - Q3 Investor ROI Proof Layer
+    - Q4 Final QA + UX cleanup
+  - Recommended next major effort: a dedicated simplification/refactor audit, split into small safe slices rather than a one-shot rewrite.
