@@ -2761,7 +2761,36 @@ Date: 2026-04-10
   - P3 complete
   - P4 complete
   - P5 complete
+- New 10-phase product improvement track:
+  - P1 Investor Story And ROI Proof
+  - P2 Broker Conversion And Retention
+  - P3 Lead/Agent Productivity
+  - P4 Admin Trust Center
+  - P5 Client-Safe AI Layer
+  - P6 Integrations And Data Reliability
+  - P7 Investor Packaging And Sharing
+  - P8 Performance And Mobile Polish
+  - P9 Security, Privacy, And Ops Readiness
+  - P10 Launch, Sales, And Feedback Loop
+- P1 breakdown:
+  - P1Q1 Investor Narrative: complete
+  - P1Q2 ROI Proof Pack: next
+  - P1Q3 Investor Share Polish: pending
+  - P1Q4 Conversion CTA / Next-Step Flow: pending
+- P1Q1 status:
+  - Completed investor-facing narrative pass in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorDashboard.jsx`.
+  - Added thesis/story cards explaining problem, product, investor fit, and a plain-English investor readout.
+  - Updated copied investor memo heading from `Vesta Investor ROI Snapshot` to `Vesta Investor Brief` and added thesis / why-it-matters / privacy-boundary language.
+  - Completed investor share narrative pass in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorSharePage.jsx`.
+  - Added share-page narrative cards explaining brokerage value leakage, Vesta's aggregate operating signal, and why AI needs a revenue scoreboard.
+  - Deployed frontend bundle `index-S3fn9SsV.js` to both `/home/empathetic/.openclaw/workspace/api/static/assets/` and `/home/empathetic/html/vesta-tech/assets/`.
+  - Verification passed:
+    - `npm run lint`
+    - `npm run build`
+    - `npm run deploy`
+    - `curl -sS http://127.0.0.1:8080/health`
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
 - Next shorthand:
-  - `xx` after this point has no defined next quarter in the simplification plan.
-  - `pp` should start a new phase only after the next product priority is defined.
-  - Suggested next product phase if continuing: investor polish / launch-readiness pack, not more simplification unless a new issue appears.
+  - `xx` should move to P1Q2 ROI Proof Pack.
+  - `pp` should move to P2 Broker Conversion And Retention after P1Q4 is complete.
