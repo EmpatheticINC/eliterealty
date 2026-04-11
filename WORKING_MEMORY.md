@@ -2177,3 +2177,55 @@ Date: 2026-04-10
   - P3Q4 first Admin/Team/Settings split complete
 - Next recommended slice:
   - close P3 or do a second P3Q4 pass that extracts one medium Admin tab panel, likely ROI controls or Audit trail, if we want the admin page smaller before moving to the next phase.
+
+## 2026-04-11 P3Q4 Final Squeeze: Admin ROI/Audit Panel Split
+
+- Completed the final P3Q4 squeeze by extracting Admin ROI and Audit tab panels and deployed it live.
+- Production frontend source files changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/AdminPanel.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/admin/AdminRoiPanel.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/admin/AdminAuditPanel.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/admin/AdminPrimitives.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/utils/adminDisplay.js`
+- Added dedicated Admin tab panels:
+  - `src/components/admin/AdminRoiPanel.jsx`
+  - `src/components/admin/AdminAuditPanel.jsx`
+- Parent `AdminPanel.jsx` still owns:
+  - ROI assumptions loading and saving
+  - ROI form state
+  - Audit loading
+  - Audit search state
+  - Audit CSV export
+  - Admin member controls
+  - all admin API calls
+- Behavior intentionally preserved:
+  - ROI model copy unchanged
+  - ROI field labels, hints, number steps, and formatting unchanged
+  - ROI save/reload behavior unchanged
+  - Audit search/export/refresh behavior unchanged
+  - Audit row compact layout unchanged
+  - admin client/pipeline visibility unchanged
+  - no backend source changed
+- File-size movement:
+  - `AdminPanel.jsx` was `829` lines after first P3Q4 split
+  - `AdminPanel.jsx` is now `736` lines
+  - `AdminRoiPanel.jsx` is `89` lines
+  - `AdminAuditPanel.jsx` is `46` lines
+  - `AdminPrimitives.jsx` remains `38` lines
+  - `adminDisplay.js` remains `115` lines
+- Verification:
+  - Pre-change `python3 scripts/vesta_smoke.py` passed with `26 passed, 0 failed`.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `npm run deploy` passed.
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - `/admin`, `/admin?tab=roi`, and `/admin?tab=audit` returned HTTP `200`.
+  - Post-change `python3 scripts/vesta_smoke.py` passed with `26 passed, 0 failed`.
+- Deployed bundle:
+  - `/api/ui/assets/index-CxukvNTr.js`
+  - `/api/ui/assets/index-CqHmp-f7.css`
+- P3Q4 status:
+  - Admin/Team/Settings primitive split complete
+  - Admin ROI/Audit panel split complete
+- P3 status:
+  - ready to close unless we intentionally open a larger follow-up refactor such as Admin system tab or Pipeline lead detail, both of which should be treated as a new phase/slice due to higher risk.
