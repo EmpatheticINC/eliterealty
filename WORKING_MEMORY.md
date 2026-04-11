@@ -1425,3 +1425,49 @@ Date: 2026-04-10
   - P1Q1 Product Surface Inventory
   - P1Q2 Visible Copy And Internal Label Cleanup
 - No production code was changed during this planning pass.
+
+## 2026-04-11 P1Q1: Product Surface Inventory
+
+- Began the simplification/refactor track with P1Q1.
+- Added durable route/product inventory:
+  - `PRODUCT_SURFACE_INVENTORY.md`
+- Confirmed active production source locations:
+  - API: `/home/empathetic/.openclaw/workspace/api`
+  - React: `/home/empathetic/.openclaw/workspace/vesta-app/src`
+  - deploy command: `npm run deploy` in `/home/empathetic/.openclaw/workspace/vesta-app`
+  - service: `vesta-api.service`
+- Mapped active API routers/endpoints:
+  - `/auth`
+  - `/api/onboard`
+  - `/api/chat`
+  - `/api/pipeline`
+  - `/api/approvals`
+  - `/api/team`
+  - `/api/broker`
+  - `/api/admin`
+  - `/api/investor`
+  - `/api/notifications`
+  - `/api/push`
+  - `/api/settings/skills`
+- Confirmed demo/dev behavior:
+  - `/api/demo/*` router is only included when `VESTA_DEV_LOGIN` is enabled
+  - current `vesta-api.service` environment has no `VESTA_DEV_LOGIN`
+  - `/api/demo/snapshot` returns `404`
+  - `/auth/dev-login` and `/auth/demo-switch` are registered in auth but self-gate to `404` when `VESTA_DEV_LOGIN` is off
+- Mapped React routes:
+  - public/standalone: `/login`, `/onboard`, `/join/:token`, `/investor/share`, `/investor/share/:token`
+  - protected: `/chat`, `/pipeline`, `/approvals`, `/settings`, `/team`, `/broker`, `/admin`, `/investor`
+- Mapped compatibility behavior:
+  - `/app` and `/app/*` redirect into the production SPA route set, usually `/chat`
+  - unknown non-API/non-auth paths serve the SPA shell
+- P1Q1 live verification:
+  - `/health` HTTP `200` with DB `ok`
+  - `/api/demo/snapshot` HTTP `404`
+  - `/auth/dev-login` HTTP `404`
+  - `/app/app.html` HTTP `307` to `/chat`
+  - `/login` HTTP `200`
+  - `/admin` HTTP `200`
+  - `/api/ui/sw.js` HTTP `200`
+- No production behavior changes were made in P1Q1.
+- Next recommended slice:
+  - P1Q2 visible copy and internal phase-label cleanup.
