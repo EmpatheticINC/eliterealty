@@ -2496,3 +2496,61 @@ Date: 2026-04-10
 - Next shorthand:
   - `xx` should move to P5Q2: Privacy Regression Tests.
   - `go` would continue P5Q1 with broader contract coverage, but the planned core payload contract slice is now in place and caught/fixed one live route bug.
+
+## 2026-04-11 P5Q2: Privacy Regression Tests
+
+- Started P5Q2 after user sent `xx`.
+- P5Q2 scope from `SIMPLIFICATION_REFACTOR_PLAN.md`:
+  - Add recursive key/content checks around admin and investor endpoints.
+  - Ensure system admin still cannot see tenant client records.
+  - Outcome: privacy guardrails are automated, not just manually checked.
+- Production test file changed:
+  - `/home/empathetic/.openclaw/workspace/tests/test_api_integration.py`
+- Added `_ApiClient.get_text()` so integration tests can inspect CSV/text responses in addition to JSON responses.
+- Added `TestPrivacyRegressionContracts` with:
+  - recursive client-content token checks for seeded lead names, lead emails, phone numbers, fixture lead notes, and draft text
+  - recursive client-record key checks for lead/detail-style fields such as `to_name`, `to_email`, `subject`, `body`, `draft_text`, `phone`, `notes`, `preferences`, `source_url`, `official_notes_summary`, `pending_drafts`, and `lead`
+  - explicit allowance for aggregate Admin table counts such as the `leads` table name, because that is aggregate operational metadata and not a client record
+- New privacy coverage:
+  - Admin operational endpoints do not expose seeded client records:
+    - `/api/admin/stats`
+    - `/api/admin/system`
+    - `/api/admin/audit`
+    - `/api/admin/roi-assumptions`
+    - `/api/investor/snapshot` as system admin
+  - System admin remains blocked from tenant client surfaces:
+    - `/api/pipeline/stats`
+    - `/api/pipeline/lead/{fub_id}`
+    - `/api/approvals`
+    - `/api/broker/overview`
+    - `/api/broker/revenue`
+    - `/api/team/overview`
+    - `/api/notifications/recent`
+    - `/api/chat/welcome`
+  - Investor snapshot/share surfaces remain aggregate-only:
+    - `/api/investor/snapshot`
+    - `/api/investor/snapshot.csv`
+    - `/api/investor/shares`
+    - `/api/investor/public`
+- Behavior intentionally preserved:
+  - no production API runtime code changed
+  - no frontend source changed
+  - no deploy required
+  - no API restart required
+  - `vesta-platform.service` was not touched
+- Verification:
+  - `python3 -m py_compile tests/test_api_integration.py` passed from `/home/empathetic/.openclaw/workspace`.
+  - `python3 -m pytest tests/test_api_integration.py::TestPrivacyRegressionContracts -v` passed with `3 passed`.
+  - `python3 -m pytest tests/test_api_integration.py::TestCorePayloadContracts -v` passed with `5 passed` when run sequentially.
+  - Combined sequential run passed:
+    - `python3 -m pytest tests/test_api_integration.py::TestCorePayloadContracts tests/test_api_integration.py::TestPrivacyRegressionContracts -v`
+    - result: `8 passed`
+  - `python3 scripts/vesta_smoke.py --public-only` passed with `28 passed, 0 failed`.
+  - `python3 scripts/vesta_smoke.py` passed with `43 passed, 0 failed`.
+- Test-running note:
+  - Do not run the integration classes in parallel against the same SQLite DB fixtures; a parallel run briefly caused fixture interference in the approvals contract test. Sequential execution passes cleanly.
+- P5Q2 status:
+  - complete
+- Next shorthand:
+  - `xx` should move to P5Q3: Health And Background Job Ownership.
+  - `go` would continue P5Q2 with broader privacy tests for additional tenant endpoints, but the planned admin/investor privacy regression guardrail is now in place.
