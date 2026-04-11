@@ -2229,3 +2229,50 @@ Date: 2026-04-10
   - Admin ROI/Audit panel split complete
 - P3 status:
   - ready to close unless we intentionally open a larger follow-up refactor such as Admin system tab or Pipeline lead detail, both of which should be treated as a new phase/slice due to higher risk.
+
+## 2026-04-11 P4Q1: Demo/Dev Route Isolation Review
+
+- User shorthand update:
+  - `4.1` means Phase 4, Quarter 1
+  - `go` means continue the same phase and quarter
+  - `xx` means move to the next quarter
+  - `pp` means move to the next phase
+- Started P4 after user sent `pp`.
+- P4 purpose from `SIMPLIFICATION_REFACTOR_PLAN.md`:
+  - separate production, demo, and automation concerns
+  - reduce confusion about what belongs to the live product versus old demos/background jobs
+- P4Q1 scope:
+  - Demo/Dev Route Isolation Review
+  - Confirm `demo.py`, `/auth/dev-login`, and `/auth/demo-switch` are unreachable in production when `VESTA_DEV_LOGIN` is off.
+  - Add or update tests if needed.
+- Production route findings:
+  - `api/app.py` imports `demo` but only mounts `demo.router` when `env_flag_enabled("VESTA_DEV_LOGIN")` is true.
+  - `/auth/providers` reports `dev_login: false` in production.
+  - `/auth/dev-login` returns HTTP `404`.
+  - `/auth/demo-switch?role=agent` returns HTTP `404`.
+  - `/api/demo/snapshot` returns HTTP `404`.
+  - `POST /api/demo/chat`, `POST /api/demo/simulate-lead`, and `DELETE /api/demo/cleanup` return HTTP `405` because the demo router is not mounted and only the SPA catch-all handles GET paths; these routes are not executable in production.
+- Smoke harness changed:
+  - `/home/empathetic/eliterealty.homes/scripts/vesta_smoke.py`
+  - renamed `demo API disabled` check to `demo snapshot disabled`
+  - added `demo chat not executable`
+  - added `demo simulate not executable`
+  - added `demo cleanup not executable`
+  - added `demo switch disabled`
+- Behavior intentionally preserved:
+  - no API source changed
+  - no frontend source changed
+  - no route behavior changed
+  - no deploy required
+  - no API restart required
+- Verification:
+  - Pre-change `python3 scripts/vesta_smoke.py` passed with `26 passed, 0 failed`.
+  - First upgraded smoke attempt intentionally exposed the FastAPI `405` behavior for unmounted mutating demo routes.
+  - Adjusted mutating demo-route expectations to accept `{404, 405}` as not executable.
+  - `python3 scripts/vesta_smoke.py --public-only` passed with `15 passed, 0 failed`.
+  - `python3 scripts/vesta_smoke.py` passed with `30 passed, 0 failed`.
+- P4Q1 status:
+  - complete
+- Next shorthand:
+  - `xx` should move to P4Q2: Automation Script Inventory.
+  - `go` would continue P4Q1 only if we want an additional written route-isolation report, but the functional smoke guard is now in place.

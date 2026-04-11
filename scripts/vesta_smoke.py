@@ -272,8 +272,12 @@ def validate_investor_snapshot(_status, _headers, _text, parsed):
 def run_public_checks(runner: SmokeRunner) -> None:
     runner.expect_status("health", "GET", "/health", 200, validator=validate_health)
     runner.expect_status("auth providers", "GET", "/auth/providers", 200, validator=validate_auth_providers)
-    runner.expect_status("demo API disabled", "GET", "/api/demo/snapshot", 404)
+    runner.expect_status("demo snapshot disabled", "GET", "/api/demo/snapshot", 404)
+    runner.expect_status("demo chat not executable", "POST", "/api/demo/chat", {404, 405}, body={"message": "hello"})
+    runner.expect_status("demo simulate not executable", "POST", "/api/demo/simulate-lead", {404, 405})
+    runner.expect_status("demo cleanup not executable", "DELETE", "/api/demo/cleanup", {404, 405})
     runner.expect_status("dev login disabled", "GET", "/auth/dev-login", 404)
+    runner.expect_status("demo switch disabled", "GET", "/auth/demo-switch?role=agent", 404)
     runner.expect_status("legacy app redirect", "GET", "/app/app.html", 307, validator=validate_redirect_to_chat)
     runner.expect_status("login page", "GET", "/login", 200, validator=validate_html)
     runner.expect_status("admin SPA shell", "GET", "/admin", 200, validator=validate_html)
