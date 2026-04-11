@@ -636,3 +636,48 @@ Date: 2026-04-10
   - `/health` returned OK.
   - Live bundle: `/api/ui/assets/index-D9zYon8p.js`.
   - Live static bundle: `/home/empathetic/html/vesta-tech/assets/index-D9zYon8p.js`.
+
+## 2026-04-10 P5 Authenticated Investor View Kickoff
+
+- Started P5 with an authenticated, read-only Investor View focused on aggregate ROI proof.
+- Intentional privacy boundary:
+  - No public/share-token route yet.
+  - No client records exposed.
+  - No client names exposed.
+  - Uses broker ROI snapshots and brokerage-level aggregates only.
+- Backend files changed:
+  - `/home/empathetic/.openclaw/workspace/api/routers/investor.py`
+  - `/home/empathetic/.openclaw/workspace/api/app.py`
+- Frontend files changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/App.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/Layout.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorDashboard.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/SvgCharts.jsx`
+- New API:
+  - `GET /api/investor/snapshot`
+  - Roles allowed: `system_admin`, `head_broker`
+  - `system_admin` receives a platform aggregate view.
+  - `head_broker` receives a brokerage-scoped aggregate view.
+- New frontend route:
+  - `/investor`
+  - Added `Investor View` to the admin and head broker sidebars.
+  - UI includes Total Projected GCI, Annual Pace, Pipeline GCI, Data Integrity, ROI Snapshot Trend, Assumptions, and Brokerage Snapshot Basis.
+- Route compatibility:
+  - `/app/investor` is included in the backend SPA fallback route list.
+- Verification:
+  - `python3 -m compileall -q api/routers/investor.py api/app.py`
+  - `npm run lint`
+  - `npm run build`
+  - `npm run deploy`
+  - `systemctl --user restart vesta-api.service`
+  - `systemctl --user --no-pager status vesta-api.service` reported active/running.
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - Authenticated admin smoke for `/api/investor/snapshot` returned HTTP 200 with `scope: platform`.
+  - Authenticated broker smoke for `/api/investor/snapshot` returned HTTP 200 with `scope: brokerage`.
+  - Both smoke responses reported `client_records_exposed: false` and `client_names_exposed: false`.
+  - Live bundle: `/api/ui/assets/index-DPX4fr3X.js`.
+  - Live static bundle: `/home/empathetic/html/vesta-tech/assets/index-DPX4fr3X.js`.
+- Current production API parent after P5 restart:
+  - PID `715982`
+- P5 next suggested slice:
+  - Add an admin-controlled share/export mode only after reviewing the authenticated Investor View shape.
