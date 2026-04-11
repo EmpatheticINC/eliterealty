@@ -1471,3 +1471,42 @@ Date: 2026-04-10
 - No production behavior changes were made in P1Q1.
 - Next recommended slice:
   - P1Q2 visible copy and internal phase-label cleanup.
+
+## 2026-04-11 P1Q2: Visible Copy And Internal Phase-Label Cleanup
+
+- Completed P1Q2 as a low-risk production copy cleanup.
+- Production frontend files changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/TeamPortal.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/Pipeline.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/Layout.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/BrokerPortal.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorDashboard.jsx`
+- User-facing cleanup:
+  - Removed visible `Phase 2` and `Phase 3` language from Team Portal ROI copy.
+  - Replaced `demo backfill` / `demo math` wording in investor/broker proof copy with `synthetic backfill`.
+- Internal comment cleanup:
+  - Replaced `P3` comments in Pipeline with neutral `Lead-level revenue protection` comments.
+  - Reworded lead-refresh comments away from demo/simulated wording.
+  - Reworded Layout event comments away from `simulate-lead` wording.
+- Verification:
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `npm run deploy` passed.
+  - Active source and deployed bundle scans returned no matches for:
+    - `Phase [0-9]`
+    - `P[0-9]:`
+    - `P[0-9]Q[0-9]`
+    - `backfilled demo`
+    - `demo backfill`
+    - `demo math`
+    - `simulated leads`
+    - `demo events`
+    - `P3`
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - `/admin` returned HTTP `200`.
+- Deployed bundle:
+  - `/api/ui/assets/index-D7jGRzjq.js`
+  - `/api/ui/assets/index-PBNNx8yJ.css`
+- No business logic, routes, API payloads, metrics, auth behavior, or database values were changed.
+- Next recommended slice:
+  - P1Q3 baseline smoke harness/checklist.
