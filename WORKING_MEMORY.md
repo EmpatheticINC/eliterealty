@@ -2009,3 +2009,54 @@ Date: 2026-04-10
   - Broker CMA Delivery section split complete
 - Next recommended slice:
   - move to P3Q3 Pipeline component split, unless one more Broker revenue panel split is desired first.
+
+## 2026-04-11 P3Q3: Pipeline Presentational Split
+
+- Completed the first conservative P3Q3 Pipeline component split and deployed it live.
+- Production frontend source files changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/Pipeline.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/pipeline/PipelinePrimitives.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/pipeline/RevenueProtection.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/utils/pipelineRevenue.js`
+- Added Pipeline component directory:
+  - `src/components/pipeline/`
+- Extracted Pipeline presentational components:
+  - `RevenueProtectionPill`
+  - `VestaRecommends`
+  - `KbdHint`
+- Moved Pipeline revenue helpers into:
+  - `src/utils/pipelineRevenue.js`
+  - `fmtMoney`
+  - `revenueTone`
+- Behavior intentionally preserved:
+  - no API calls changed
+  - no route behavior changed
+  - pipeline data fetching unchanged
+  - lead selection/detail state unchanged
+  - compose email modal untouched
+  - lead detail panel structure untouched
+  - revenue protection labels, colors, title text, and money formatting unchanged
+  - Vesta recommendation urgency styling unchanged
+  - keyboard hint styling unchanged
+  - no backend source changed
+- File-size movement:
+  - `Pipeline.jsx` was `2,015` lines before P3Q3 inspection
+  - `Pipeline.jsx` is now `1,889` lines
+  - `PipelinePrimitives.jsx` is `74` lines
+  - `RevenueProtection.jsx` is `17` lines
+  - `pipelineRevenue.js` is `34` lines
+- Verification:
+  - Pre-change `python3 scripts/vesta_smoke.py` passed with `26 passed, 0 failed`.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `npm run deploy` passed.
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - `/pipeline` returned HTTP `200` and loads the deployed frontend bundle.
+  - Post-change `python3 scripts/vesta_smoke.py` passed with `26 passed, 0 failed`.
+- Deployed bundle:
+  - `/api/ui/assets/index-DVqkqLHZ.js`
+  - `/api/ui/assets/index-hWraMuTq.css`
+- P3Q3 status:
+  - first Pipeline presentational split complete
+- Next recommended slice:
+  - either deepen P3Q3 by extracting `ComposeModal` and email-purpose constants into a dedicated component, or proceed to P3Q4 Admin/Team/Settings split if we want to keep P3 moving.
