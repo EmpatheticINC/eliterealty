@@ -2060,3 +2060,54 @@ Date: 2026-04-10
   - first Pipeline presentational split complete
 - Next recommended slice:
   - either deepen P3Q3 by extracting `ComposeModal` and email-purpose constants into a dedicated component, or proceed to P3Q4 Admin/Team/Settings split if we want to keep P3 moving.
+
+## 2026-04-11 P3Q3 Deepening: Pipeline Compose Modal Split
+
+- Deepened P3Q3 by extracting the Pipeline email compose modal and deployed it live.
+- Production frontend source files changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/Pipeline.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/pipeline/ComposeModal.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/pipeline/PipelinePrimitives.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/pipeline/RevenueProtection.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/utils/pipelineRevenue.js`
+- Added dedicated Pipeline compose component:
+  - `src/components/pipeline/ComposeModal.jsx`
+- Moved compose-specific logic out of `Pipeline.jsx`:
+  - `EMAIL_PURPOSES`
+  - compose modal state
+  - draft request sequencing
+  - draft email endpoint call
+  - approval draft queue endpoint call
+  - modal rendering/styling
+- Behavior intentionally preserved:
+  - compose open/close behavior unchanged
+  - selected lead payload passed from parent unchanged
+  - `onSent` toast callback unchanged
+  - AI draft endpoint unchanged
+  - approval draft endpoint unchanged
+  - draft-tier defaults unchanged
+  - reset effect behavior preserved
+  - no route behavior changed
+  - no backend source changed
+- File-size movement:
+  - `Pipeline.jsx` was `1,889` lines after first P3Q3 split
+  - `Pipeline.jsx` is now `1,653` lines
+  - `ComposeModal.jsx` is `237` lines
+  - `PipelinePrimitives.jsx` is `74` lines
+  - `RevenueProtection.jsx` is `17` lines
+  - `pipelineRevenue.js` is `34` lines
+- Verification:
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `npm run deploy` passed.
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - `/pipeline` returned HTTP `200` and loads the deployed frontend bundle.
+  - `python3 scripts/vesta_smoke.py` passed with `26 passed, 0 failed`.
+- Deployed bundle:
+  - `/api/ui/assets/index-DODStiho.js`
+  - `/api/ui/assets/index-hWraMuTq.css`
+- P3Q3 status:
+  - Pipeline presentational split complete
+  - Pipeline compose modal split complete
+- Next recommended slice:
+  - move to P3Q4 Admin/Team/Settings split unless we specifically want to keep digging into the lead detail panel, which is larger and riskier.
