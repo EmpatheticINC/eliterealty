@@ -256,7 +256,16 @@ def validate_no_privacy_keys(scope: str):
 def validate_admin_system(_status, _headers, _text, parsed):
     assert isinstance(parsed, dict), "admin system response was not JSON"
     assert "ops_overview" in parsed, "missing ops_overview"
+    assert "background_jobs" in parsed, "missing background_jobs"
     assert "ai_quality" in parsed, "missing ai_quality"
+    background_jobs = parsed.get("background_jobs") or {}
+    assert isinstance(background_jobs.get("summary"), dict), "missing background_jobs.summary"
+    jobs = background_jobs.get("jobs")
+    assert isinstance(jobs, list), "missing background_jobs.jobs"
+    assert any(
+        job.get("unit") == "vesta-platform.service" and job.get("classification") == "disabled"
+        for job in jobs
+    ), "legacy vesta-platform unit should be classified as disabled"
     for key in ("ops_overview", "ai_quality"):
         paths = forbidden_key_paths(parsed.get(key), FORBIDDEN_PRIVACY_KEYS)
         assert not paths, f"{key} exposed forbidden key(s): {', '.join(paths[:8])}"

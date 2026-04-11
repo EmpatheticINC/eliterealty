@@ -2554,3 +2554,89 @@ Date: 2026-04-10
 - Next shorthand:
   - `xx` should move to P5Q3: Health And Background Job Ownership.
   - `go` would continue P5Q2 with broader privacy tests for additional tenant endpoints, but the planned admin/investor privacy regression guardrail is now in place.
+
+## 2026-04-11 P5Q3: Health And Background Job Ownership
+
+- Started P5Q3 after user sent `xx`.
+- P5Q3 scope from `SIMPLIFICATION_REFACTOR_PLAN.md`:
+  - Make system health identify which background jobs are expected, optional, degraded, or disabled.
+  - Outcome: Admin health becomes more actionable and less ambiguous.
+- Production API source changed:
+  - `/home/empathetic/.openclaw/workspace/api/routers/admin.py`
+- Frontend source changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/AdminPanel.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/utils/adminDisplay.js`
+- Production test/smoke files changed:
+  - `/home/empathetic/.openclaw/workspace/tests/test_api_integration.py`
+  - `/home/empathetic/eliterealty.homes/scripts/vesta_smoke.py`
+- Backend health changes:
+  - Added `background_jobs` to `GET /api/admin/system`.
+  - Added active production job definitions for:
+    - `cloudflared.service`
+    - `vesta-api.service`
+    - `vesta-bot.service`
+    - `email-monitor.service`
+    - `fub-inbound-monitor.service`
+    - `speed-to-lead.service`
+    - `lead-activity-server.service`
+    - `vesta-continuous.service`
+    - `vesta-dashboard.service`
+    - `vesta-crm.service`
+    - `vesta-fub-sync.timer`
+    - `vesta-db-backup.timer`
+    - `vesta-allday-learning.timer`
+  - Added disabled/stale/legacy job definitions for:
+    - `vesta-platform.service`
+    - `vesta-composio.service`
+    - `sms-inbound-monitor.service`
+    - `telegram-listener.service`
+  - Each job now includes:
+    - `id`
+    - `label`
+    - `unit`
+    - `kind`
+    - `classification`
+    - `status`
+    - `enabled`
+    - `health`
+    - `severity`
+    - `description`
+    - optional `timer`
+  - Readiness scoring now treats only expected degraded jobs as critical service-down conditions.
+  - Optional offline jobs are surfaced as `info`, not critical failures.
+  - Disabled legacy/stale units are classified as `disabled`, not degraded.
+  - Existing `services`, `automation`, `ops_overview`, and `ai_quality` response fields were preserved for compatibility.
+- Admin frontend changes:
+  - Overview metric now shows expected job health instead of raw configured-service percentage.
+  - System tab now includes a `Background Job Ownership` panel.
+  - The panel shows healthy/degraded/optional/disabled counts and per-job ownership rows.
+  - Added `jobTone()` and `info` issue tone handling.
+- Verification:
+  - `python3 -m py_compile api/routers/admin.py tests/test_api_integration.py` passed from `/home/empathetic/.openclaw/workspace`.
+  - Targeted integration tests passed:
+    - `python3 -m pytest tests/test_api_integration.py::TestCorePayloadContracts::test_admin_system_payload_contract tests/test_api_integration.py::TestPrivacyRegressionContracts::test_admin_operational_endpoints_do_not_expose_client_records -v`
+    - result: `2 passed`
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `npm run deploy` passed and deployed bundle:
+    - `/api/static/assets/index-DwCiKivb.js`
+    - `/home/empathetic/html/vesta-tech/assets/index-DwCiKivb.js`
+  - Restarted only `vesta-api.service`.
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - Live authenticated Admin system response confirmed:
+    - `background_jobs.summary`: `healthy=13`, `degraded=0`, `optional=0`, `disabled=4`, `expected_total=10`, `expected_healthy=10`
+    - `background_jobs.jobs`: `17`
+    - disabled units: `vesta-platform.service`, `vesta-composio.service`, `sms-inbound-monitor.service`, `telegram-listener.service`
+  - `python3 -m py_compile scripts/vesta_smoke.py` passed.
+  - `python3 scripts/vesta_smoke.py --public-only` passed with `28 passed, 0 failed`.
+  - `python3 scripts/vesta_smoke.py` passed with `43 passed, 0 failed`.
+- Behavior intentionally preserved:
+  - no client/pipeline visibility added to Admin
+  - no service enable/disable changes made
+  - no disabled legacy units restarted or re-enabled
+  - `vesta-platform.service` was not touched
+- P5Q3 status:
+  - complete
+- Next shorthand:
+  - `xx` should move to P5Q4: Final Simplification Closeout.
+  - `go` would continue P5Q3 only if we want to add background-job ownership to Broker health too, but the planned Admin system-health ownership slice is complete.
