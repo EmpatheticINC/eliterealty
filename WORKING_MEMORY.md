@@ -2774,7 +2774,7 @@ Date: 2026-04-10
   - P10 Launch, Sales, And Feedback Loop
 - P1 breakdown:
   - P1Q1 Investor Narrative: complete
-  - P1Q2 ROI Proof Pack: next
+  - P1Q2 ROI Proof Pack: complete
   - P1Q3 Investor Share Polish: pending
   - P1Q4 Conversion CTA / Next-Step Flow: pending
 - P1Q1 status:
@@ -2791,6 +2791,20 @@ Date: 2026-04-10
     - `curl -sS http://127.0.0.1:8080/health`
     - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
     - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
+- P1Q2 status:
+  - Completed ROI proof-pack pass in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorDashboard.jsx`.
+  - Added private investor dashboard proof-pack section explaining revenue mix, target gap, contact/data basis, assumption basis, target coverage, and investor-safe privacy boundary.
+  - Completed matching public share-page proof-pack pass in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorSharePage.jsx`.
+  - Added public share proof-pack section explaining how to read the numbers without exposing client-level records.
+  - Deployed frontend bundle `index-Cv05jBdL.js` to both `/home/empathetic/.openclaw/workspace/api/static/assets/` and `/home/empathetic/html/vesta-tech/assets/`.
+  - Verification passed:
+    - `npm run lint`
+    - `npm run build`
+    - `npm run deploy`
+    - `curl -sS http://127.0.0.1:8080/health`
+    - live asset grep for `ROI Proof Pack`, `How the investor numbers hold together`, `How to read the numbers`, and `Investor-safe boundary`
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
 - Next shorthand:
-  - `xx` should move to P1Q2 ROI Proof Pack.
+  - `xx` should move to P1Q3 Investor Share Polish.
   - `pp` should move to P2 Broker Conversion And Retention after P1Q4 is complete.
