@@ -1621,3 +1621,37 @@ Date: 2026-04-10
   - P1Q4 complete: refactor boundaries and complexity budget
 - Next recommended phase:
   - P2: centralize business rules, starting with P2Q1 shared ROI math helper extraction.
+
+## 2026-04-11 P2 Planning: Four-Quarter Business Rules Map
+
+- Mapped P2 before implementation, per user request.
+- Added durable P2 plan document:
+  - `P2_BUSINESS_RULES_PLAN.md`
+- P2 purpose:
+  - centralize ROI and business-rule logic while preserving production behavior, endpoint response shapes, role boundaries, and investor privacy posture
+- P2 principle:
+  - make the math boring
+- Current business-rule surfaces confirmed:
+  - `api/roi_assumptions.py` stores shared configurable ROI assumptions
+  - `api/routers/pipeline.py` still owns local stage probability, commission rate, default home value, budget parsing, and revenue protection logic
+  - `api/routers/broker_portal.py` owns broker revenue calculations, ROI snapshots, ROI history, distinct-FUB rollups, and broker pipeline value
+  - `api/routers/investor.py` owns aggregate investor snapshot/proof construction and public share snapshot output
+- P2Q1:
+  - shared ROI math helper for stage probability, budget parsing, full GCI, and weighted GCI
+  - recommended first caller: Pipeline revenue protection
+  - do not change ROI default values or endpoint response shapes
+- P2Q2:
+  - extract revenue protection into a reusable service boundary
+  - preserve SLA thresholds, score thresholds, Pipeline payload shape, filters, sorting, and lead scoping
+- P2Q3:
+  - extract Broker revenue/ROI snapshot construction behind a boundary
+  - preserve distinct-FUB logic, broker snapshot table behavior, raw versus distinct counts, and endpoint response contracts
+- P2Q4:
+  - extract Investor aggregate proof/snapshot builder
+  - preserve public share-token behavior, CSV meanings, admin privacy boundaries, and aggregate-only investor visibility
+- P2 verification rule:
+  - run `python3 scripts/vesta_smoke.py` before and after each quarter
+  - compile touched backend modules
+  - frontend build/deploy is only required if frontend source changes, which P2 should generally avoid
+- Recommended next action:
+  - begin P2Q1 with the smallest shared ROI helper extraction, converting Pipeline revenue-protection math first and leaving Broker/Investor behavior untouched in the first slice.
