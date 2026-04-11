@@ -1697,3 +1697,45 @@ Date: 2026-04-10
 - No frontend build or deploy was needed.
 - Next recommended slice:
   - P2Q2 revenue protection service boundary.
+
+## 2026-04-11 P2Q2: Revenue Protection Service Boundary
+
+- Completed P2Q2 backend-only service extraction.
+- Production source files changed:
+  - `/home/empathetic/.openclaw/workspace/api/revenue_protection.py`
+  - `/home/empathetic/.openclaw/workspace/api/routers/pipeline.py`
+- Added shared revenue protection module:
+  - `api/revenue_protection.py`
+- New shared functions:
+  - `days_since(iso)`
+  - `revenue_protection(lead, score=None)`
+- Pipeline now imports compatibility aliases:
+  - `from api.revenue_protection import days_since as _days_since`
+  - `from api.revenue_protection import revenue_protection as _revenue_protection`
+- Existing Pipeline call sites were left intact:
+  - lead list cards
+  - lead detail payload
+  - hot/opportunity rows
+  - pipeline stats revenue-protection summary
+- Behavior intentionally preserved:
+  - hot lead threshold unchanged at score `>= 75`
+  - warm lead threshold unchanged at score `>= 50`
+  - hot SLA risk unchanged at never contacted or `>= 1` day
+  - warm SLA risk unchanged at never contacted or `>= 3` days
+  - `protected` behavior unchanged for contacted within `<= 1` day
+  - revenue-protection payload keys unchanged
+  - ROI math remains sourced from the P2Q1 shared ROI helpers
+  - Pipeline filters, sorting, lead scoping, and approval behavior untouched
+  - Broker, Investor, FUB sync, ownership, and dedupe untouched
+- Verification:
+  - Pre-change `python3 scripts/vesta_smoke.py` passed with `26 passed, 0 failed`.
+  - `python3 -m py_compile /home/empathetic/.openclaw/workspace/api/revenue_protection.py /home/empathetic/.openclaw/workspace/api/routers/pipeline.py` passed.
+  - Restarted `vesta-api.service`; service active and `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - Direct helper sanity check:
+    - `days_since(None)` returned `None`.
+    - appointment-set `$320,000` hot lead with no last contact returned estimated home value `320000`, commission rate `2.5`, stage probability `30`, estimated GCI `8000`, weighted GCI `2400`, revenue at risk `2400`, SLA status `critical`, and label `Hot lead never contacted`.
+  - Post-change `python3 scripts/vesta_smoke.py` passed with `26 passed, 0 failed`.
+- No frontend source changed.
+- No frontend build or deploy was needed.
+- Next recommended slice:
+  - P2Q3 Broker revenue and ROI snapshot boundary.
