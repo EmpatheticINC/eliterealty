@@ -2333,3 +2333,49 @@ Date: 2026-04-10
 - Next shorthand:
   - `xx` should move to P4Q3: Database Startup/Migration Cleanup.
   - `go` would continue P4Q2 with deeper import/reference checks before any archive action.
+
+## 2026-04-11 P4Q3: Database Startup/Migration Cleanup
+
+- Started P4Q3 after user sent `xx`.
+- P4Q3 scope from `SIMPLIFICATION_REFACTOR_PLAN.md`:
+  - Move best-effort `ALTER TABLE` startup work in `api/app.py` toward an explicit migration/bootstrap path.
+  - Keep WAL/performance pragmas in startup if still appropriate.
+  - Outcome: app startup becomes less surprising and schema changes are easier to audit.
+- Production API source files changed:
+  - `/home/empathetic/.openclaw/workspace/api/app.py`
+  - `/home/empathetic/.openclaw/workspace/api/db_startup.py`
+- Added `api/db_startup.py` with focused startup helpers:
+  - `apply_startup_pragmas(conn)`
+  - `apply_schema_hardening(conn)`
+  - `backfill_startup_tenancy(conn)`
+  - `create_startup_indexes(conn)`
+  - `STARTUP_SCHEMA_HARDENING`
+  - `STARTUP_INDEXES`
+- Refactored `api/app.py` startup:
+  - kept the same startup call order
+  - kept the same PRAGMAs
+  - kept the same best-effort schema hardening statements
+  - kept the same lead/user/email draft backfills
+  - kept the same startup indexes
+  - kept `broker_portal.capture_roi_snapshots_for_all_brokerages(conn)`
+  - kept `ANALYZE`, commit, close, and logging behavior
+- Behavior intentionally preserved:
+  - no SQL behavior intentionally changed
+  - no schema statement removed
+  - no data backfill removed
+  - no frontend source changed
+  - no frontend deploy required
+  - `vesta-platform.service` was not touched
+- Verification:
+  - `python3 -m py_compile api/app.py api/db_startup.py` passed from `/home/empathetic/.openclaw/workspace`.
+  - Restarted only `vesta-api.service`.
+  - `systemctl --user --no-pager status vesta-api.service` showed active/running after restart.
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - `python3 scripts/vesta_smoke.py --public-only` passed with `15 passed, 0 failed`.
+  - `python3 scripts/vesta_smoke.py` passed with `30 passed, 0 failed`.
+  - Unauthenticated `/api/admin/system` still returns HTTP `401`.
+- P4Q3 status:
+  - complete for the first startup cleanup slice
+- Next shorthand:
+  - `xx` should move to P4Q4: Active Route And Link Audit.
+  - `go` would continue P4Q3 with deeper migration consolidation, likely by reconciling older `db_migrate.py` / `db_migrations/001_brokerage_rollout.py` against `api/db_startup.py`; that is higher-risk and should be treated as a separate careful slice.
