@@ -727,3 +727,71 @@ Date: 2026-04-10
   - PID `727842`
 - P5 next suggested slice:
   - Build an admin-controlled public investor share link with revocation/expiry only after confirming the internal proof pack is acceptable.
+
+## 2026-04-10 P6 Controlled Investor Share Links
+
+- Started P6 as Investor Sharing + Launch Polish.
+- Built the first P6 slice: controlled public investor share links for aggregate ROI proof.
+- Privacy/security stance:
+  - Public links are aggregate-only.
+  - No client records exposed.
+  - No client names exposed.
+  - No individual pipeline rows exposed.
+  - Share tokens are returned only at creation time.
+  - Share list endpoint never returns token values.
+  - Final public link format uses `/investor/share#token` so the token is kept out of the HTTP request path.
+  - Public report data fetch uses `POST /api/investor/public` with the token in the JSON body to avoid tokenized API paths in access logs.
+- Backend files changed:
+  - `/home/empathetic/.openclaw/workspace/api/routers/investor.py`
+  - `/home/empathetic/.openclaw/workspace/api/routers/admin.py`
+- Frontend files changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/App.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorDashboard.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorSharePage.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/AdminPanel.jsx`
+- New backend storage:
+  - `investor_share_links`
+  - Fields include token hash, label, scope, brokerage_id, created_by, created_at, expires_at, revoked_at, last_viewed_at, and view_count.
+  - Tokens are stored as SHA-256 hashes, not plaintext.
+- New authenticated API:
+  - `GET /api/investor/shares`
+  - `POST /api/investor/shares`
+  - `DELETE /api/investor/shares/{share_id}`
+- New public API:
+  - `POST /api/investor/public`
+  - `GET /api/investor/public/{token}` still exists as a compatibility fallback, but the frontend no longer uses tokenized API paths.
+- New public frontend:
+  - `/investor/share#token`
+  - Also supports `/investor/share/:token` as a fallback route.
+  - Public page renders outside the authenticated app shell and shows only aggregate ROI proof, assumptions, privacy basis, and snapshot basis.
+- Investor dashboard:
+  - Added `P6 Controlled Sharing`.
+  - Added `Create 14-Day Link`.
+  - Shows active/expired/revoked share links without tokens.
+  - Shows view count and last-viewed timestamp.
+  - Allows revocation of active links.
+- Admin audit:
+  - `/api/admin/audit` includes:
+    - `investor_share_link_created`
+    - `investor_share_link_revoked`
+  - Admin UI labels added:
+    - `Investor link created`
+    - `Investor link revoked`
+- Verification:
+  - `python3 -m compileall -q api/routers/investor.py api/routers/admin.py api/app.py`
+  - `npm run lint`
+  - `npm run build`
+  - `npm run deploy`
+  - `systemctl --user restart vesta-api.service`
+  - `/health` returned OK.
+  - Authenticated admin share lifecycle smoke passed: create, public fetch, list, revoke, revoked public access blocked.
+  - Authenticated broker share lifecycle smoke passed with brokerage scope.
+  - Hardened hash-link smoke passed: create returned `/investor/share#token`, public fetch via `POST /api/investor/public` returned HTTP 200, `/investor/share` served SPA shell, revoke returned HTTP 200.
+  - Smoke share links were deleted after verification; `investor_share_links` had `0` rows afterward.
+  - Old pre-hardening tokenized public smoke paths in `/tmp/vesta-api.log` were redacted.
+  - Live bundle: `/api/ui/assets/index-DaeDfeIT.js`.
+  - Live static bundle: `/home/empathetic/html/vesta-tech/assets/index-DaeDfeIT.js`.
+- Current production API parent after P6 restart:
+  - PID `743012`
+- P6 next suggested slice:
+  - Add a print/PDF-style investor report polish pass for the public share page and/or a launch QA checklist across public routes.
