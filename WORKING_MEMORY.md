@@ -1960,3 +1960,52 @@ Date: 2026-04-10
   - first Broker component split complete
 - Next recommended slice:
   - continue P3Q2 with a deeper Broker tab/section split, likely CMA operations or revenue proof panel, before moving to P3Q3.
+
+## 2026-04-11 P3Q2 Deepening: Broker CMA Delivery Split
+
+- Continued P3Q2 with a deeper Broker section split and deployed it live.
+- Production frontend source files changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/BrokerPortal.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/broker/BrokerCmaDelivery.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/broker/BrokerPortalPrimitives.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/utils/brokerTones.js`
+- Added dedicated Broker CMA component:
+  - `src/components/broker/BrokerCmaDelivery.jsx`
+- Extracted the Broker Health tab CMA Delivery section into `BrokerCmaDelivery`.
+- Parent `BrokerPortal.jsx` still owns:
+  - API calls
+  - CMA email form state
+  - queueing function
+  - expanded/collapsed form state
+  - health refresh after queueing
+- Behavior intentionally preserved:
+  - CMA status count cards unchanged
+  - recent CMA job rows unchanged
+  - download PDF link behavior unchanged
+  - approval link behavior unchanged
+  - queue-another-recipient behavior unchanged
+  - Queue Email Approval button behavior unchanged
+  - no API calls changed
+  - no broker data fetching changed
+  - no backend source changed
+- File-size movement:
+  - `BrokerPortal.jsx` is now `1,756` lines
+  - `BrokerCmaDelivery.jsx` is `170` lines
+  - `BrokerPortalPrimitives.jsx` is `89` lines
+  - `brokerTones.js` is `6` lines
+- Verification:
+  - Pre-change `python3 scripts/vesta_smoke.py` passed with `26 passed, 0 failed`.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `npm run deploy` passed.
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - `/broker` loads the deployed frontend bundle.
+  - Post-change `python3 scripts/vesta_smoke.py` passed with `26 passed, 0 failed`.
+- Deployed bundle:
+  - `/api/ui/assets/index-Dby8N9_j.js`
+  - `/api/ui/assets/index-hWraMuTq.css`
+- P3Q2 status:
+  - Broker Portal primitive/chrome split complete
+  - Broker CMA Delivery section split complete
+- Next recommended slice:
+  - move to P3Q3 Pipeline component split, unless one more Broker revenue panel split is desired first.
