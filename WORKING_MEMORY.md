@@ -1085,3 +1085,44 @@ Date: 2026-04-10
 - P7 next suggested slice:
   - If we want one more P7 hardening pass, add per-job "already queued" visibility in the CMA Delivery UI and a direct "Open draft" affordance once a real CMA has been queued.
   - Otherwise P7 Phase 3 is complete enough to move to the next phase.
+
+## 2026-04-11 P7 Phase 4: CMA Approval Queue Visibility Polish
+
+- Continued P7 with the fourth slice: making completed CMA jobs show whether an approval email draft is already queued.
+- Backend files changed:
+  - `/home/empathetic/.openclaw/workspace/api/routers/broker_portal.py`
+- Frontend files changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/BrokerPortal.jsx`
+- Backend changes:
+  - Added `_cma_email_idempotency_key(...)` helper so the queue route and future lookups share the same deterministic key.
+  - `/api/broker/health` recent CMA rows now include non-discarded draft metadata when the CMA PDF already has an approval draft:
+    - `email_draft_id`
+    - `email_draft_status`
+    - `email_to_email`
+    - `email_to_name`
+    - `email_queued_at`
+- Frontend changes:
+  - Broker CMA Delivery rows now show an `Email awaiting`-style badge when an approval draft is already tied to the CMA PDF.
+  - Rows show the queued draft number and recipient summary.
+  - Completed rows with queued drafts expose `Open approvals`.
+  - The recipient form is collapsed behind `Queue another recipient` once a CMA already has a draft, preventing accidental duplicate queueing while still allowing a separate recipient if needed.
+- Deployment:
+  - `npm run deploy` completed.
+  - API restarted through `vesta-api.service`.
+  - Current production API parent PID after restart: `1573714`.
+  - Live bundle:
+    - `/api/ui/assets/index-Du_ZGkyf.js`
+  - Live CSS:
+    - `/api/ui/assets/index-B72H1dIm.css`
+- Verification:
+  - `python3 -m py_compile /home/empathetic/.openclaw/workspace/api/routers/broker_portal.py`
+  - `npm run lint`
+  - `npm run build`
+  - `npm run deploy`
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}` after API restart.
+  - Authenticated John Doe broker smoke queued a temporary CMA approval draft from a service-private test PDF.
+  - `/api/broker/health` returned the smoke CMA job with `email_draft_id`, `email_draft_status='awaiting'`, and the expected recipient email.
+  - Smoke cleanup verified `0` remaining Phase 4 smoke CMA jobs, smoke drafts, and smoke activity rows.
+- P7 status:
+  - P7 Phase 4 completes the CMA background generation, broker/admin visibility, approval handoff, and queued-draft UX loop.
+  - Next recommended move is either close P7 or define P8 around production observability/AI quality controls.
