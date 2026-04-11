@@ -1834,3 +1834,42 @@ Date: 2026-04-10
   - P2Q4 complete: investor aggregate proof builder boundary
 - Next recommended phase:
   - P3 frontend panel/component simplification, beginning with shared UI/formatting utilities.
+
+## 2026-04-11 P3 Planning: Four-Quarter Frontend Simplification Map
+
+- Mapped P3 before implementation, per user request.
+- Added durable P3 plan document:
+  - `P3_FRONTEND_SIMPLIFICATION_PLAN.md`
+- P3 purpose:
+  - reduce frontend risk by splitting large React panels and centralizing repeated UI/formatting logic while preserving live product behavior
+- P3 principle:
+  - preserve the screen first, then simplify the file
+- Current largest frontend files:
+  - `BrokerPortal.jsx` - 1,935 lines
+  - `Pipeline.jsx` - 1,916 lines
+  - `TeamPortal.jsx` - 1,201 lines
+  - `Settings.jsx` - 1,074 lines
+  - `AdminPanel.jsx` - 963 lines
+  - `Chat.jsx` - 829 lines
+- Observed duplication:
+  - money formatting repeated in Investor, Investor Share, Pipeline, and Admin
+  - date/time formatting repeated in Broker, Team, Admin, Investor, Investor Share, and Settings
+  - status/tone helpers repeated across Admin, Broker, Pipeline, and Team
+  - investor proof card/tile UI duplicated between authenticated and public investor pages
+  - Broker and Team share setup/gap badge concepts
+- P3Q1:
+  - shared formatting and small UI utilities
+  - recommended first implementation: `src/utils/format.js` used by `InvestorDashboard.jsx` and `InvestorSharePage.jsx`
+- P3Q2:
+  - Broker Portal component split by stable tab/section boundaries
+- P3Q3:
+  - Pipeline component split while preserving all lead actions and revenue-protection payload usage
+- P3Q4:
+  - Admin, Team, Settings section split and P3 closeout
+- P3 verification rule:
+  - run `npm run lint`
+  - run `npm run build`
+  - run `npm run deploy` only after frontend changes are ready to ship
+  - run `python3 scripts/vesta_smoke.py` after deploy/API health confirmation
+- Recommended next action:
+  - begin P3Q1 with shared frontend format helpers and convert the two investor proof surfaces first.
