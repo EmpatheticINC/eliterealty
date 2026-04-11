@@ -1402,3 +1402,26 @@ Date: 2026-04-10
     - Q3 Investor ROI Proof Layer
     - Q4 Final QA + UX cleanup
   - Recommended next major effort: a dedicated simplification/refactor audit, split into small safe slices rather than a one-shot rewrite.
+
+## 2026-04-11 Simplification/Refactor Planning
+
+- Took a step back after P8 and performed a planning audit of the production Vesta app before making more code changes.
+- Current production source remains in `/home/empathetic/.openclaw/workspace`.
+- Main audit findings:
+  - largest backend complexity: `api/routers/chat.py`, `api/routers/broker_portal.py`, `api/routers/pipeline.py`
+  - largest frontend complexity: `BrokerPortal.jsx`, `Pipeline.jsx`, `TeamPortal.jsx`, `Settings.jsx`, `AdminPanel.jsx`
+  - ROI/GCI math is duplicated across pipeline, broker, investor, and frontend display surfaces
+  - demo/dev routes are mostly gated, but demo/phase terminology still exists in some source and UI copy
+  - live DB at audit time had 70 tables, 3 users, 2 brokerages, 2 teams, 138 leads, 46 lead scores, 70 email drafts, and 2 broker ROI snapshots
+- Added durable planning document:
+  - `SIMPLIFICATION_REFACTOR_PLAN.md`
+- Recommended simplification sequence:
+  - P1: stabilize route/product map and remove remaining visible internal phase language
+  - P2: centralize ROI/revenue business rules
+  - P3: split large frontend panels
+  - P4: separate production, demo, and automation concerns
+  - P5: harden tests, privacy checks, and operational health
+- Recommended starting point:
+  - P1Q1 Product Surface Inventory
+  - P1Q2 Visible Copy And Internal Label Cleanup
+- No production code was changed during this planning pass.
