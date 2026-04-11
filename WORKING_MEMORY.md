@@ -1126,3 +1126,57 @@ Date: 2026-04-10
 - P7 status:
   - P7 Phase 4 completes the CMA background generation, broker/admin visibility, approval handoff, and queued-draft UX loop.
   - Next recommended move is either close P7 or define P8 around production observability/AI quality controls.
+
+## 2026-04-11 P7 Phase 5: CMA Reliability Health Signals
+
+- Continued P7 with a fifth hardening slice: surfacing CMA delivery reliability issues before users lose trust.
+- Backend files changed:
+  - `/home/empathetic/.openclaw/workspace/api/routers/broker_portal.py`
+  - `/home/empathetic/.openclaw/workspace/api/routers/admin.py`
+- Frontend files changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/BrokerPortal.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/AdminPanel.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/TeamPortal.jsx`
+- Backend changes:
+  - Broker `/api/broker/health` CMA counts now include:
+    - `stale`
+    - `missing_pdf`
+  - Broker recent CMA rows now include:
+    - `pdf_available`
+    - `is_stale`
+    - `delivery_warning`
+  - Stale detection uses `julianday(...)` for reliable timestamp comparison:
+    - queued older than 15 minutes
+    - running older than 30 minutes
+  - Admin `/api/admin/system` CMA summary now includes aggregate-only `stale` and `missing_pdf` counts.
+  - Admin still does not receive CMA client names, addresses, file URLs, or job rows.
+- Frontend changes:
+  - Broker CMA Delivery count grid now includes `Stale` and `Missing PDF`.
+  - Broker recent CMA rows show a `Needs check` badge and warning text when a job is stale or a completed PDF is missing.
+  - Admin Automation Freshness CMA card now displays aggregate `Stale` and `Missing PDF` counts when present.
+  - Fixed an unrelated lint blocker in `TeamPortal.jsx` by defining the missing `barGrads` constant used by the top-three team leaderboard bars.
+- Deployment:
+  - `npm run deploy` completed.
+  - API restarted through `vesta-api.service`.
+  - Current production API parent PID after restart: `1585672`.
+  - Live bundle:
+    - `/api/ui/assets/index-CBGlNBJ8.js`
+  - Live CSS:
+    - `/api/ui/assets/index-Dv0rha_6.css`
+- Verification:
+  - `python3 -m py_compile /home/empathetic/.openclaw/workspace/api/routers/broker_portal.py /home/empathetic/.openclaw/workspace/api/routers/admin.py`
+  - `npm run lint`
+  - `npm run build`
+  - `npm run deploy`
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}` after API restart.
+  - Authenticated John Doe broker smoke inserted a temporary 45-minute-old running CMA job and verified:
+    - broker `stale_count` included the job
+    - row had `is_stale=True`
+    - row warning was `Job has been running longer than expected`
+  - Authenticated system admin smoke verified:
+    - admin aggregate `stale` included the smoke job
+    - admin response did not include the smoke client name or address
+  - Smoke cleanup verified `0` remaining Phase 5 smoke CMA jobs.
+- P7 status:
+  - P7 now covers CMA generation, broker/admin visibility, approval-gated delivery, queued-draft UX, and reliability health signals.
+  - Recommended next move: close P7 unless we want a final manual browser QA pass.
