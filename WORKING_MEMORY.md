@@ -1180,3 +1180,58 @@ Date: 2026-04-10
 - P7 status:
   - P7 now covers CMA generation, broker/admin visibility, approval-gated delivery, queued-draft UX, and reliability health signals.
   - Recommended next move: close P7 unless we want a final manual browser QA pass.
+
+## 2026-04-11 P8Q1: Production QA Command Center
+
+- Started P8 as four quarters:
+  - Q1: Production QA Command Center
+  - Q2: AI quality controls
+  - Q3: investor ROI proof layer
+  - Q4: manual browser QA + UX cleanup
+- Backend files changed:
+  - `/home/empathetic/.openclaw/workspace/api/routers/admin.py`
+- Frontend files changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/AdminPanel.jsx`
+- Backend changes:
+  - Added `ops_overview` to `/api/admin/system`.
+  - `ops_overview` includes aggregate-only production readiness:
+    - `status`
+    - `readiness_score`
+    - `issues`
+    - `signals`
+  - Signals include services active, AI vector availability, pending approvals, CMA stale/missing PDF counts, active sessions, FUB connected coverage, and sender-ready coverage.
+  - Issues are generated from real production conditions only:
+    - services down
+    - Qdrant unavailable
+    - memory pressure
+    - stale CMA jobs
+    - missing CMA PDFs
+    - failed CMA jobs
+    - approval backlog
+  - Admin payload remains privacy-safe and does not expose client names, client addresses, CMA file URLs, or job-level CMA rows.
+- Frontend changes:
+  - Admin System tab now has a top-level `Production QA Command` panel.
+  - Panel shows readiness score/status, live signal tiles, and issue cards.
+  - Added UI tone helpers for ops status and issue severity.
+- Deployment:
+  - `npm run deploy` completed.
+  - API restarted through `vesta-api.service`.
+  - Current production API parent PID after restart: `1612769`.
+  - Live bundle:
+    - `/api/ui/assets/index-8KTMdSMO.js`
+  - Live CSS:
+    - `/api/ui/assets/index--tnXVemx.css`
+- Verification:
+  - `python3 -m py_compile /home/empathetic/.openclaw/workspace/api/routers/admin.py`
+  - `npm run lint`
+  - `npm run build`
+  - `npm run deploy`
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}` after API restart.
+  - Initial admin smoke caught a backend typo in `ops_overview`; fixed it and reran verification.
+  - Authenticated system admin smoke verified:
+    - `ops_overview.status` returned `ready`
+    - `ops_overview.readiness_score` returned `100`
+    - expected signal keys were present
+    - no client-level CMA keys such as `client_name`, `address`, or `file_url` were present in `ops_overview`
+- P8Q1 next suggested slice:
+  - Add a small browser/manual QA pass for the Admin System tab, then move to P8Q2 AI quality controls.
