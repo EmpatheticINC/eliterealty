@@ -2640,3 +2640,128 @@ Date: 2026-04-10
 - Next shorthand:
   - `xx` should move to P5Q4: Final Simplification Closeout.
   - `go` would continue P5Q3 only if we want to add background-job ownership to Broker health too, but the planned Admin system-health ownership slice is complete.
+
+## 2026-04-11 P5Q4: Final Simplification Closeout
+
+- Started P5Q4 after user sent `xx`.
+- P5Q4 scope from `SIMPLIFICATION_REFACTOR_PLAN.md`:
+  - Run lint, build, deploy, API restart, health smoke, endpoint smoke, route/link smoke, and privacy smoke.
+  - Update working memory with final active files, active routes, and remaining known risks.
+  - Outcome: simplification/refactor track can be closed cleanly.
+- Production verification completed:
+  - `python3 -m py_compile api/app.py api/db_startup.py api/routers/admin.py api/routers/pipeline.py api/routers/broker_portal.py api/routers/investor.py tests/test_api_integration.py` passed from `/home/empathetic/.openclaw/workspace`.
+  - `python3 -m py_compile scripts/vesta_smoke.py` passed from `/home/empathetic/eliterealty.homes`.
+  - `npm run lint` passed from `/home/empathetic/.openclaw/workspace/vesta-app`.
+  - `npm run build` passed from `/home/empathetic/.openclaw/workspace/vesta-app`.
+  - Contract/privacy integration suite passed sequentially:
+    - `python3 -m pytest tests/test_api_integration.py::TestCorePayloadContracts tests/test_api_integration.py::TestPrivacyRegressionContracts -v`
+    - result: `8 passed`.
+  - `npm run deploy` passed and deployed final P5Q4 bundle:
+    - `/api/static/assets/index-BDZx6Pj_.js`
+    - `/api/static/assets/index-BwsYHRX9.css`
+    - `/home/empathetic/html/vesta-tech/assets/index-BDZx6Pj_.js`
+    - `/home/empathetic/html/vesta-tech/assets/index-BwsYHRX9.css`
+  - Restarted only `vesta-api.service`.
+  - `systemctl --user --no-pager status vesta-api.service` showed active/running after restart.
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - `python3 scripts/vesta_smoke.py --public-only` passed with `28 passed, 0 failed`.
+  - `python3 scripts/vesta_smoke.py` passed with `43 passed, 0 failed`.
+  - Live `/admin` serves the final bundle through:
+    - `/api/ui/assets/index-BDZx6Pj_.js`
+    - `/api/ui/assets/react-vendor-BMwiz2rr.js`
+    - `/api/ui/assets/network-qFyJwsfU.js`
+    - `/api/ui/assets/index-BwsYHRX9.css`
+  - Live authenticated Admin system response confirmed:
+    - `background_jobs.summary`: `healthy=13`, `degraded=0`, `optional=0`, `disabled=4`, `expected_total=10`, `expected_healthy=10`
+    - `ops_overview.signals.expected_jobs_healthy`: `10/10`
+- Active production route families after closeout:
+  - Public/auth:
+    - `/health`
+    - `/auth/providers`
+    - `/login`
+    - `/auth/me`
+  - Current SPA shells:
+    - `/chat`
+    - `/pipeline`
+    - `/approvals`
+    - `/settings`
+    - `/team`
+    - `/broker`
+    - `/admin`
+    - `/investor`
+    - `/onboard`
+    - `/investor/share`
+  - Compatibility redirects:
+    - `/app` -> `/chat`
+    - `/app/pipeline` -> `/pipeline`
+    - unknown `/app/*` -> `/chat`
+  - Active app/PWA assets:
+    - `/api/ui/sw.js`
+    - `/api/ui/manifest.json`
+    - `/api/ui/icon-192.png`
+- Active production backend entrypoints/modules emphasized by the simplification track:
+  - `/home/empathetic/.openclaw/workspace/api/app.py`
+  - `/home/empathetic/.openclaw/workspace/api/db_startup.py`
+  - `/home/empathetic/.openclaw/workspace/api/routers/admin.py`
+  - `/home/empathetic/.openclaw/workspace/api/routers/broker_portal.py`
+  - `/home/empathetic/.openclaw/workspace/api/routers/investor.py`
+  - `/home/empathetic/.openclaw/workspace/api/routers/pipeline.py`
+  - `/home/empathetic/.openclaw/workspace/api/investor_snapshot_builder.py`
+  - `/home/empathetic/.openclaw/workspace/api/revenue_protection.py`
+  - `/home/empathetic/.openclaw/workspace/api/roi_assumptions.py`
+- Active production frontend entrypoints/modules emphasized by the simplification track:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/AdminPanel.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/BrokerPortal.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorDashboard.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorSharePage.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/Pipeline.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/Settings.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/TeamPortal.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/admin/AdminPrimitives.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/admin/AdminRoiPanel.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/admin/AdminAuditPanel.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/broker/BrokerPortalPrimitives.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/broker/BrokerCmaDelivery.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/pipeline/RevenueProtection.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/pipeline/PipelinePrimitives.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/pipeline/ComposeModal.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/utils/adminDisplay.js`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/utils/format.js`
+- Durable docs and smoke artifacts from the simplification track:
+  - `/home/empathetic/eliterealty.homes/SIMPLIFICATION_REFACTOR_PLAN.md`
+  - `/home/empathetic/eliterealty.homes/PRODUCT_SURFACE_INVENTORY.md`
+  - `/home/empathetic/eliterealty.homes/BASELINE_SMOKE_CHECKLIST.md`
+  - `/home/empathetic/eliterealty.homes/REFACTOR_BOUNDARIES.md`
+  - `/home/empathetic/eliterealty.homes/P2_BUSINESS_RULES_PLAN.md`
+  - `/home/empathetic/eliterealty.homes/P3_FRONTEND_SIMPLIFICATION_PLAN.md`
+  - `/home/empathetic/eliterealty.homes/AUTOMATION_SCRIPT_INVENTORY.md`
+  - `/home/empathetic/eliterealty.homes/ACTIVE_ROUTE_LINK_AUDIT.md`
+  - `/home/empathetic/eliterealty.homes/scripts/vesta_smoke.py`
+- Remaining known risks / operating notes:
+  - Production app source under `/home/empathetic/.openclaw/workspace` is not tracked by the `eliterealty.homes` Git repo; this working memory and pushed Track 3 commits are the durable action log.
+  - Integration classes in `tests/test_api_integration.py` should be run sequentially against SQLite fixtures, not in parallel.
+  - `vesta-platform.service` is intentionally disabled and should not be restarted or re-enabled for production.
+  - Disabled stale units remain intentionally untouched:
+    - `vesta-composio.service`
+    - `sms-inbound-monitor.service`
+    - `telegram-listener.service`
+  - FUB contacts may still look duplicated because current keys point to the same FUB account; user said to ignore this until separate FUB accounts/keys are available.
+  - Root public `https://vesta-tech.net/manifest.json` previously returned `404`; active PWA manifest is `/api/ui/manifest.json`, and smoke covers that route.
+  - Optional future cleanup: archive/reference-check stale scripts and disabled units before deleting anything.
+- P5Q4 status:
+  - complete
+- P5 status:
+  - P5Q1 contract tests complete
+  - P5Q2 privacy regression tests complete
+  - P5Q3 health/background ownership complete
+  - P5Q4 final closeout complete
+- Simplification/refactor status:
+  - P1 complete
+  - P2 complete
+  - P3 complete
+  - P4 complete
+  - P5 complete
+- Next shorthand:
+  - `xx` after this point has no defined next quarter in the simplification plan.
+  - `pp` should start a new phase only after the next product priority is defined.
+  - Suggested next product phase if continuing: investor polish / launch-readiness pack, not more simplification unless a new issue appears.
