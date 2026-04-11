@@ -1040,3 +1040,48 @@ Date: 2026-04-10
   - Verified `0` remaining rows for the Phase 2 smoke CMA job/session.
 - P7 next suggested slice:
   - Add approval/email handoff for completed CMA jobs so a broker can send the generated PDF through the existing approval-gated email flow, not directly to clients.
+
+## 2026-04-11 P7 Phase 3: CMA Approval Email Handoff
+
+- Continued P7 with the third slice: broker-controlled CMA PDF email handoff through the existing approval queue.
+- Privacy/control boundary:
+  - Head Broker can queue an email approval only for completed CMA jobs inside their brokerage.
+  - The route validates job status and requires the PDF to exist inside the API service's CMA output folder before creating a draft.
+  - This does not direct-send client email; it creates an `awaiting` approval draft that must still be approved in `/approvals`.
+  - System Admin still does not receive client-level CMA details through this work.
+- Backend files changed:
+  - `/home/empathetic/.openclaw/workspace/api/routers/broker_portal.py`
+  - `/home/empathetic/.openclaw/workspace/api/routers/approvals.py`
+- Frontend files changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/BrokerPortal.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/Approvals.jsx`
+- Broker changes:
+  - Added `POST /api/broker/cma_jobs/{job_id}/queue-email`.
+  - Completed CMA rows in Broker System Health now expose recipient name/email/subject fields plus `Queue Email Approval`.
+  - Successful queueing refreshes broker health and links the broker to `/approvals`.
+  - Added `cma_generated` feed display support.
+- Approval changes:
+  - `/api/approvals` now includes `attachment_path` for visible drafts.
+  - Approval cards now show a `PDF attached` badge and the attachment file name in the expanded metadata.
+- Deployment:
+  - `npm run deploy` completed.
+  - API restarted through `vesta-api.service`.
+  - Current production API parent PID after restart: `1566375`.
+  - Live bundle:
+    - `/api/ui/assets/index-CNWAbViU.js`
+  - Live CSS:
+    - `/api/ui/assets/index-bwrhU8lD.css`
+- Verification:
+  - `python3 -m py_compile /home/empathetic/.openclaw/workspace/api/routers/broker_portal.py /home/empathetic/.openclaw/workspace/api/routers/approvals.py`
+  - `npm run lint`
+  - `npm run build`
+  - `npm run deploy`
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}` after API restart.
+  - Authenticated John Doe broker smoke for `/api/broker/health` returned DB `ok` and CMA job counts.
+  - Missing PDF guard smoke returned HTTP 409 with `The CMA PDF is not available on the server yet.`
+  - Service-private temp success smoke created a temporary PDF inside the API `PrivateTmp` namespace, queued a CMA approval draft, and verified the draft had `attachment_path`.
+  - `/api/approvals` remained healthy for the John Doe broker session.
+  - Smoke cleanup verified `0` remaining Phase 3 smoke CMA jobs, smoke drafts, and smoke activity rows.
+- P7 next suggested slice:
+  - If we want one more P7 hardening pass, add per-job "already queued" visibility in the CMA Delivery UI and a direct "Open draft" affordance once a real CMA has been queued.
+  - Otherwise P7 Phase 3 is complete enough to move to the next phase.
