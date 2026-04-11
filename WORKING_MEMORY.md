@@ -1914,3 +1914,49 @@ Date: 2026-04-10
   - complete for the first utility slice
 - Next recommended slice:
   - P3Q2 Broker Portal component split by stable tab/section boundaries.
+
+## 2026-04-11 P3Q2: Broker Portal Primitive/Chrome Split
+
+- Completed the first conservative P3Q2 Broker Portal component split and deployed it live.
+- Production frontend source files changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/BrokerPortal.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/broker/BrokerPortalPrimitives.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/utils/brokerTones.js`
+- Added Broker component directory:
+  - `src/components/broker/`
+- Extracted Broker UI primitives:
+  - `SetupBadge`
+  - `GapBadge`
+  - `KPICard`
+  - `BrokerPortalChrome`
+- Moved CMA status tone helper out of the page and into:
+  - `src/utils/brokerTones.js`
+- Behavior intentionally preserved:
+  - broker data fetching unchanged
+  - tab IDs and tab state unchanged
+  - broker route unchanged
+  - KPI card styling and labels unchanged
+  - setup/gap badge styling and labels unchanged
+  - CMA status tone classes unchanged
+  - broker revenue, ROI, distinct-FUB, health, and CMA logic untouched
+  - no API calls changed
+  - no backend source changed
+- File-size movement:
+  - `BrokerPortal.jsx` is now `1,896` lines
+  - `BrokerPortalPrimitives.jsx` is `89` lines
+  - `brokerTones.js` is `6` lines
+- Verification:
+  - Pre-change `python3 scripts/vesta_smoke.py` passed with `26 passed, 0 failed`.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `npm run deploy` passed.
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - `/broker` loads the deployed frontend bundle.
+  - Post-change `python3 scripts/vesta_smoke.py` passed with `26 passed, 0 failed`.
+- Deployed bundle:
+  - `/api/ui/assets/index-BnY7PNLd.js`
+  - `/api/ui/assets/index-hWraMuTq.css`
+- P3Q2 status:
+  - first Broker component split complete
+- Next recommended slice:
+  - continue P3Q2 with a deeper Broker tab/section split, likely CMA operations or revenue proof panel, before moving to P3Q3.
