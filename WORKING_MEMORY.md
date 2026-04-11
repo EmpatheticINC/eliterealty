@@ -795,3 +795,69 @@ Date: 2026-04-10
   - PID `743012`
 - P6 next suggested slice:
   - Add a print/PDF-style investor report polish pass for the public share page and/or a launch QA checklist across public routes.
+
+## 2026-04-10 P6 Public Investor Report Polish + Launch QA
+
+- Continued final P6 factors with investor-facing polish and public-route cleanup.
+- Frontend production app files changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorSharePage.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/index.css`
+- Live static marketing files changed:
+  - `/home/empathetic/html/vesta-tech/index.html`
+  - `/home/empathetic/html/vesta-tech/demo.html`
+- Marketing/static backups created before direct HTML edits:
+  - `/home/empathetic/html/vesta-tech/index.html.bak.p6-20260411T002741Z`
+  - `/home/empathetic/html/vesta-tech/demo.html.bak.p6-20260411T002741Z`
+- Public investor report polish:
+  - Added `Print / Save PDF` action.
+  - Added `Why It Matters`, `Risk Boundary`, and `Current Signal` thesis cards.
+  - Reworked headline to emphasize operating leverage without client exposure.
+  - Added `Investor Readout` section with revenue momentum, target coverage, and aggregate-only privacy posture.
+  - Added target coverage calculation to report basis.
+  - Added report footer with generated timestamp, expiring link context, and aggregate-only basis.
+  - Added print-specific CSS:
+    - `.investor-report`
+    - `.investor-print-card`
+    - `.investor-print-hide`
+    - `@media print`
+  - Print CSS strips dark/glow chrome and keeps cards readable on white paper/PDF output.
+- Public route QA cleanup:
+  - Removed live static calls to disabled production `/api/demo/*` endpoints from:
+    - `/home/empathetic/html/vesta-tech/index.html`
+    - `/home/empathetic/html/vesta-tech/demo.html`
+  - Replaced demo page API calls with local static demo snapshot and local static chat replies.
+  - This stops production from producing fresh `/api/demo/snapshot` and `/api/demo/chat` dead calls from the marketing/demo pages.
+- Verification:
+  - `npm run lint`
+  - `npm run build`
+  - `npm run deploy`
+  - `rg` verified no `/api/demo/`, `Michigan Top Producers`, `Elite Team`, `Try full platform demo`, or typo `Try full playform demo` strings remain in:
+    - `/home/empathetic/html/vesta-tech/index.html`
+    - `/home/empathetic/html/vesta-tech/demo.html`
+    - `/home/empathetic/.openclaw/workspace/vesta-app/src`
+  - Public route smoke:
+    - `/` returned HTTP 200 and no `/api/demo/` string.
+    - `/demo.html` returned HTTP 200 and no `/api/demo/` string.
+    - `/investor/share` returned HTTP 200 and served the SPA shell.
+  - Live bundles contain new investor report polish:
+    - `Print / Save PDF`
+    - `Investor Readout`
+    - `Real operating leverage`
+    - `/api/investor/public`
+  - Live CSS bundles contain print/report classes:
+    - `@media print`
+    - `investor-print-card`
+    - `investor-report`
+  - `/health` returned OK.
+  - API service remained active; no backend restart was needed for this frontend/static-only pass.
+  - Current production API parent remains PID `743012`.
+- Live bundle:
+  - `/api/ui/assets/index-DgjFvScs.js`
+  - `/home/empathetic/html/vesta-tech/assets/index-DgjFvScs.js`
+- Live CSS bundle:
+  - `/api/ui/assets/index-D5i1hF-Q.css`
+  - `/home/empathetic/html/vesta-tech/assets/index-D5i1hF-Q.css`
+- Note:
+  - `/tmp/vesta-api.log` still contains older `/api/demo/snapshot` 404 entries from before this cleanup, but the current live public pages no longer call `/api/demo/*`.
+- P6 status:
+  - P6 is now close to complete. Remaining optional polish would be visual review in a browser/PDF output and any final investor wording tweaks after user review.
