@@ -891,3 +891,41 @@ Date: 2026-04-10
   - Saleswise CMA can be tied into clients, but the safest launch flow is chat request -> generated PDF download for authenticated user -> optional approval-gated email with attachment.
   - Do not make Saleswise CMA a direct unattended client-send flow yet because Puppeteer/Saleswise selectors and login session state are brittle and CMA generation can take several minutes.
   - A more robust future slice would convert CMA generation into a background job with progress status, retry/failure visibility, and admin/broker audit events.
+
+## 2026-04-10 P6 Final Closeout QA
+
+- Completed the final P6 launch QA pass without needing new product code changes.
+- Public route checks:
+  - `https://vesta-tech.net/` returned HTTP 200.
+  - `https://vesta-tech.net/demo.html` returned HTTP 200.
+  - `https://vesta-tech.net/investor/share` returned HTTP 200 and served the SPA shell.
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+- Investor share lifecycle smoke:
+  - Authenticated as `Aiden@vesta-tech.net` system admin using a local signed session token.
+  - `GET /api/investor/snapshot` returned HTTP 200 with `scope=platform`.
+  - Created a temporary share link labeled `P6 closeout smoke link`.
+  - Public fetch through `POST /api/investor/public` returned HTTP 200 and preserved aggregate-only privacy:
+    - `client_records_exposed=false`
+    - `client_names_exposed=false`
+  - `GET /api/investor/shares` showed the smoke link with `view_count=1` and `last_viewed_at` populated.
+  - Revoked the smoke link successfully.
+  - Confirmed revoked public access returned HTTP 404.
+  - Deleted the smoke share row and removed the test-only smoke audit breadcrumb afterward.
+  - Verified `investor_share_links` has `0` rows and no smoke audit rows remain.
+- Final sweeps:
+  - No active matches for `/api/demo/`, `Michigan Top Producers`, `Elite Team`, `Try full platform demo`, or `Try full playform demo` in the public marketing pages, production app source, or investor router.
+  - Live public pages no longer contain those stale/demo strings.
+  - Live bundles still contain expected investor report features:
+    - `Print / Save PDF`
+    - `Investor Readout`
+    - `/api/investor/public`
+    - print/report classes
+- Verification:
+  - `npm run lint`
+  - `npm run build`
+  - `python3 -m py_compile /home/empathetic/.openclaw/workspace/api/routers/investor.py /home/empathetic/.openclaw/workspace/api/routers/admin.py /home/empathetic/.openclaw/workspace/api/app.py`
+  - `vesta-api.service` remained active with production API parent PID `766664`.
+- P6 status:
+  - P6 can be considered complete.
+  - No frontend deploy was needed in this closeout pass because there were no app source changes.
+  - Next recommended phase can be P7: client-facing CMA/report delivery hardening, background-job reliability, or final launch packaging.
