@@ -2379,3 +2379,62 @@ Date: 2026-04-10
 - Next shorthand:
   - `xx` should move to P4Q4: Active Route And Link Audit.
   - `go` would continue P4Q3 with deeper migration consolidation, likely by reconciling older `db_migrate.py` / `db_migrations/001_brokerage_rollout.py` against `api/db_startup.py`; that is higher-risk and should be treated as a separate careful slice.
+
+## 2026-04-11 P4Q4: Active Route And Link Audit
+
+- Started P4Q4 after user sent `xx`.
+- P4Q4 scope from `SIMPLIFICATION_REFACTOR_PLAN.md`:
+  - Re-run clickable/link audit after refactors: SPA routes, compatibility redirects, investor share links, demo links, login/onboard flows, and public assets.
+  - Outcome: no broken links or stale route confusion after cleanup.
+- Added durable audit document:
+  - `/home/empathetic/eliterealty.homes/ACTIVE_ROUTE_LINK_AUDIT.md`
+- Smoke harness changed:
+  - `/home/empathetic/eliterealty.homes/scripts/vesta_smoke.py`
+  - added generalized `validate_redirect_to(expected_path)`
+  - added legacy `/app/pipeline` redirect check
+  - added legacy unknown `/app/demo` redirect check
+  - added SPA shell checks for:
+    - `/chat`
+    - `/pipeline`
+    - `/approvals`
+    - `/settings`
+    - `/team`
+    - `/broker`
+    - `/admin`
+    - `/investor`
+    - `/onboard`
+    - `/investor/share`
+  - added PWA manifest check at `/api/ui/manifest.json`
+  - added PWA icon check at `/api/ui/icon-192.png`
+- Audit findings:
+  - local production SPA shell routes returned HTTP `200`
+  - compatibility redirects returned expected HTTP `307`
+  - active PWA/static asset routes returned HTTP `200`
+  - public marketing routes returned HTTP `200`:
+    - `https://vesta-tech.net/`
+    - `https://vesta-tech.net/demo.html`
+    - `https://vesta-tech.net/login`
+    - `https://vesta-tech.net/logo-mark.svg`
+    - `https://vesta-tech.net/og-image.svg`
+  - marketing demo CTAs intentionally point to `https://vesta-tech.net/demo.html`
+  - `https://vesta-tech.net/manifest.json` returned HTTP `404`, but the app’s active PWA manifest route is `/api/ui/manifest.json` and that route is now covered by smoke.
+- Behavior intentionally preserved:
+  - no API source changed
+  - no frontend source changed
+  - no public marketing files changed
+  - no deploy required
+  - no API restart required
+- Verification:
+  - `python3 -m py_compile scripts/vesta_smoke.py` passed.
+  - `python3 scripts/vesta_smoke.py --public-only` passed with `28 passed, 0 failed`.
+  - `python3 scripts/vesta_smoke.py` passed with `43 passed, 0 failed`.
+- P4Q4 status:
+  - complete
+- P4 status:
+  - P4Q1 demo/dev route isolation complete
+  - P4Q2 automation script inventory complete
+  - P4Q3 database startup cleanup complete
+  - P4Q4 active route/link audit complete
+- Next shorthand:
+  - `pp` should move to P5: Verification And Operational Hardening.
+  - `go` would continue P4 only if we want an extra archive pass for stale disabled units/scripts, but the planned P4 quarters are complete.

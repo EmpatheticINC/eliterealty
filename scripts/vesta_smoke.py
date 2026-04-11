@@ -215,6 +215,14 @@ def validate_redirect_to_chat(_status, headers, _text, _parsed):
     assert location.endswith("/chat") or location == "/chat", f"location={location!r}"
 
 
+def validate_redirect_to(expected_path: str):
+    def _validator(_status, headers, _text, _parsed):
+        location = headers.get("location") or headers.get("Location") or ""
+        assert location.endswith(expected_path) or location == expected_path, f"location={location!r}"
+
+    return _validator
+
+
 def validate_html(_status, headers, text, _parsed):
     content_type = headers.get("content-type") or headers.get("Content-Type") or ""
     assert "text/html" in content_type, f"content-type={content_type!r}"
@@ -279,9 +287,22 @@ def run_public_checks(runner: SmokeRunner) -> None:
     runner.expect_status("dev login disabled", "GET", "/auth/dev-login", 404)
     runner.expect_status("demo switch disabled", "GET", "/auth/demo-switch?role=agent", 404)
     runner.expect_status("legacy app redirect", "GET", "/app/app.html", 307, validator=validate_redirect_to_chat)
+    runner.expect_status("legacy pipeline redirect", "GET", "/app/pipeline", 307, validator=validate_redirect_to("/pipeline"))
+    runner.expect_status("legacy unknown app redirect", "GET", "/app/demo", 307, validator=validate_redirect_to_chat)
     runner.expect_status("login page", "GET", "/login", 200, validator=validate_html)
+    runner.expect_status("chat SPA shell", "GET", "/chat", 200, validator=validate_html)
+    runner.expect_status("pipeline SPA shell", "GET", "/pipeline", 200, validator=validate_html)
+    runner.expect_status("approvals SPA shell", "GET", "/approvals", 200, validator=validate_html)
+    runner.expect_status("settings SPA shell", "GET", "/settings", 200, validator=validate_html)
+    runner.expect_status("team SPA shell", "GET", "/team", 200, validator=validate_html)
+    runner.expect_status("broker SPA shell", "GET", "/broker", 200, validator=validate_html)
     runner.expect_status("admin SPA shell", "GET", "/admin", 200, validator=validate_html)
+    runner.expect_status("investor SPA shell", "GET", "/investor", 200, validator=validate_html)
+    runner.expect_status("onboard SPA shell", "GET", "/onboard", 200, validator=validate_html)
+    runner.expect_status("investor share SPA shell", "GET", "/investor/share", 200, validator=validate_html)
     runner.expect_status("service worker", "GET", "/api/ui/sw.js", 200, validator=validate_text_contains("Service Worker"))
+    runner.expect_status("PWA manifest", "GET", "/api/ui/manifest.json", 200, validator=lambda *_args: require_json(_args[3]))
+    runner.expect_status("PWA icon", "GET", "/api/ui/icon-192.png", 200)
     runner.expect_status("pipeline requires auth", "GET", "/api/pipeline/stats", 401)
     runner.expect_status("admin requires auth", "GET", "/api/admin/system", 401)
     runner.expect_status("investor requires auth", "GET", "/api/investor/snapshot", 401)
