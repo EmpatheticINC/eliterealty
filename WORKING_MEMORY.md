@@ -681,3 +681,49 @@ Date: 2026-04-10
   - PID `715982`
 - P5 next suggested slice:
   - Add an admin-controlled share/export mode only after reviewing the authenticated Investor View shape.
+
+## 2026-04-10 P5 Investor Proof Pack Export
+
+- Continued P5 by adding an authenticated Investor Proof Pack export before introducing any public investor share links.
+- Privacy stance remains unchanged:
+  - No public/share-token route yet.
+  - No client records exposed.
+  - No client names exposed.
+  - CSV export is aggregate-only from the same investor snapshot source.
+- Backend files changed:
+  - `/home/empathetic/.openclaw/workspace/api/routers/investor.py`
+  - `/home/empathetic/.openclaw/workspace/api/routers/admin.py`
+- Frontend files changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorDashboard.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/AdminPanel.jsx`
+- New API:
+  - `GET /api/investor/snapshot.csv`
+  - Roles allowed: `system_admin`, `head_broker`
+  - Uses the same scope rules as `/api/investor/snapshot`.
+  - Writes `investor_snapshot_exported` to `activity_log`.
+- Admin audit:
+  - `/api/admin/audit` now includes `investor_snapshot_exported`.
+  - Admin UI label added: `Investor proof exported`.
+- Investor UI:
+  - Added `Export Proof Pack` button.
+  - Added `Copy Investor Memo` button for a share-ready text summary.
+  - Buttons live on `/investor` in the generated/scope card.
+- Verification:
+  - `python3 -m compileall -q api/routers/investor.py api/routers/admin.py api/app.py`
+  - `npm run lint`
+  - `npm run build`
+  - `npm run deploy`
+  - `systemctl --user restart vesta-api.service`
+  - `systemctl --user --no-pager status vesta-api.service` reported active/running.
+  - `/health` returned OK.
+  - Authenticated admin `GET /api/investor/snapshot` returned HTTP 200.
+  - Authenticated admin `GET /api/investor/snapshot.csv` returned HTTP 200 with `text/csv`.
+  - Admin CSV contained `Client Names Exposed, False`.
+  - Authenticated broker `GET /api/investor/snapshot.csv` returned HTTP 200 with `scope: brokerage`.
+  - Authenticated admin `GET /api/admin/audit?limit=10` returned HTTP 200 and showed investor proof exports.
+  - Live bundle: `/api/ui/assets/index-B2yH9dcl.js`.
+  - Live static bundle: `/home/empathetic/html/vesta-tech/assets/index-B2yH9dcl.js`.
+- Current production API parent after P5 Proof Pack restart:
+  - PID `727842`
+- P5 next suggested slice:
+  - Build an admin-controlled public investor share link with revocation/expiry only after confirming the internal proof pack is acceptable.
