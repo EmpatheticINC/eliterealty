@@ -1510,3 +1510,54 @@ Date: 2026-04-10
 - No business logic, routes, API payloads, metrics, auth behavior, or database values were changed.
 - Next recommended slice:
   - P1Q3 baseline smoke harness/checklist.
+
+## 2026-04-11 P1Q3: Baseline Smoke Harness
+
+- Completed P1Q3 by adding a repeatable baseline smoke harness/checklist for future simplification/refactor slices.
+- Added files:
+  - `scripts/vesta_smoke.py`
+  - `BASELINE_SMOKE_CHECKLIST.md`
+- Harness behavior:
+  - Uses only Python standard library HTTP tooling.
+  - Checks public/unauthenticated route behavior by default.
+  - Mints short-lived local JWT cookies for existing DB users for deeper admin/broker checks.
+  - Does not print secrets or tokens.
+  - Default admin smoke user: `Aiden@vesta-tech.net`.
+  - Default broker smoke user: `aiden.h.huynh@gmail.com`.
+- Public/unauthenticated checks include:
+  - `/health`
+  - `/auth/providers`
+  - `/api/demo/snapshot`
+  - `/auth/dev-login`
+  - `/app/app.html`
+  - `/login`
+  - `/admin`
+  - `/api/ui/sw.js`
+  - auth-required rejection checks for pipeline/admin/investor API routes
+- Authenticated system-admin checks include:
+  - `/auth/me`
+  - `/api/admin/system`
+  - `/api/admin/users`
+  - `/api/admin/audit`
+  - `/api/admin/roi-assumptions`
+  - `/api/investor/snapshot`
+- Authenticated broker checks include:
+  - `/auth/me`
+  - `/api/broker/overview`
+  - `/api/broker/revenue`
+  - `/api/broker/roi_history?days=30`
+  - `/api/broker/pipeline_value`
+  - `/api/broker/health`
+  - `/api/approvals`
+  - `/api/pipeline/stats`
+  - `/api/investor/snapshot`
+- Privacy checks:
+  - Admin system `ops_overview` and `ai_quality` are checked for forbidden client-style keys.
+  - Investor snapshots are checked for aggregate proof and forbidden client-style keys.
+- Verification:
+  - `python3 -m py_compile scripts/vesta_smoke.py` passed.
+  - `python3 scripts/vesta_smoke.py` passed with `26 passed, 0 failed`.
+  - `python3 scripts/vesta_smoke.py --public-only` passed with `11 passed, 0 failed`.
+- No production app behavior was changed in P1Q3.
+- Next recommended slice:
+  - P1Q4 complexity budget and refactor boundaries.
