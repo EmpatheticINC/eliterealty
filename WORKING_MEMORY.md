@@ -1235,3 +1235,65 @@ Date: 2026-04-10
     - no client-level CMA keys such as `client_name`, `address`, or `file_url` were present in `ops_overview`
 - P8Q1 next suggested slice:
   - Add a small browser/manual QA pass for the Admin System tab, then move to P8Q2 AI quality controls.
+
+## 2026-04-11 P8Q2: AI Quality Controls
+
+- Continued P8 with Q2: aggregate AI quality controls for the Admin System tab.
+- Backend files changed:
+  - `/home/empathetic/.openclaw/workspace/api/routers/admin.py`
+- Frontend files changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/AdminPanel.jsx`
+- Backend changes:
+  - Added `ai_quality` to `/api/admin/system`.
+  - `ai_quality` includes:
+    - `status`
+    - `quality_score`
+    - `flags`
+    - `draft_outcomes_30d`
+    - `chat_7d`
+    - `automation_quality`
+  - Draft outcomes are aggregate-only:
+    - awaiting
+    - approved
+    - rejected
+    - approval rate
+    - total
+  - Chat quality is aggregate-only:
+    - user messages in 7 days
+    - assistant messages in 7 days
+    - latest assistant response timestamp
+    - assistant agent mix counts
+  - Automation quality includes aggregate CMA and Qdrant signals.
+  - Flags are generated from real conditions only:
+    - AI response gap
+    - low draft acceptance
+    - review backlog
+    - CMA generation failures
+  - Admin payload intentionally does not include message bodies, draft subjects, draft bodies, recipient emails, client names, client addresses, or CMA file URLs.
+- Frontend changes:
+  - Added `AI Quality Controls` panel under Admin System.
+  - Panel shows quality score/status, approval outcomes, chat counts, CMA failure count, Qdrant count, assistant mix, and quality flags.
+  - Added `qualityTone(...)` helper for healthy/watch/needs-review states.
+- Deployment:
+  - `npm run deploy` completed.
+  - API restarted through `vesta-api.service`.
+  - Current production API parent PID after restart: `1755433`.
+  - Live bundle:
+    - `/api/ui/assets/index-CIeeihTB.js`
+  - Live CSS:
+    - `/api/ui/assets/index--5Uhd4OZ.css`
+- Verification:
+  - `python3 -m py_compile /home/empathetic/.openclaw/workspace/api/routers/admin.py`
+  - `npm run lint`
+  - `npm run build`
+  - `npm run deploy`
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}` after API restart.
+  - Authenticated system admin smoke verified:
+    - `ai_quality.status` returned `watch`
+    - `ai_quality.quality_score` returned `68`
+    - expected draft/chat keys were present
+    - one aggregate quality flag was present
+    - no private content keys such as `content`, `client_name`, `address`, `to_email`, `body`, or `subject` appeared in `ai_quality`
+- P8Q2 status:
+  - Complete unless we want to tune scoring thresholds after observing live usage.
+  - Next suggested slice: P8Q3 investor ROI proof layer.
