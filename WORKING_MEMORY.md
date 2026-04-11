@@ -2276,3 +2276,60 @@ Date: 2026-04-10
 - Next shorthand:
   - `xx` should move to P4Q2: Automation Script Inventory.
   - `go` would continue P4Q1 only if we want an additional written route-isolation report, but the functional smoke guard is now in place.
+
+## 2026-04-11 P4Q2: Automation Script Inventory
+
+- Started P4Q2 after user sent `xx`.
+- P4Q2 scope from `SIMPLIFICATION_REFACTOR_PLAN.md`:
+  - Categorize root-level scripts as active, manual utility, legacy/archive, or unknown.
+  - Do not delete first; create an inventory and only archive after verification.
+  - Outcome: old automation files stop being a mental tax without breaking background jobs.
+- Added durable inventory document:
+  - `/home/empathetic/eliterealty.homes/AUTOMATION_SCRIPT_INVENTORY.md`
+- Inventory findings:
+  - Found `133` root-level Python, shell, and JavaScript script files under `/home/empathetic/.openclaw/workspace`.
+  - Active/enabled systemd units and timers are the production source of truth for automation ownership.
+  - `vesta-api.service` is the production FastAPI/PWA service.
+  - `vesta-platform.service` is disabled and labeled as the legacy demo API unit; keep disabled and do not use for production.
+  - Active/enabled production spine includes:
+    - `cloudflared.service`
+    - `vesta-api.service`
+    - `vesta-bot.service`
+    - `email-monitor.service`
+    - `fub-inbound-monitor.service`
+    - `speed-to-lead.service`
+    - `lead-activity-server.service`
+    - `vesta-continuous.service`
+    - `vesta-dashboard.service`
+    - `vesta-crm.service`
+    - `vesta-fub-sync.timer` / `vesta-fub-sync.service`
+    - `vesta-db-backup.timer` / `vesta-db-backup.service`
+    - `vesta-allday-learning.timer` / `vesta-allday-learning.service`
+    - `vesta-loop-alert@.service`
+  - Disabled/stale unit definitions that reference missing files:
+    - `vesta-composio.service` -> `composio_continuous_agent.py` missing
+    - `sms-inbound-monitor.service` -> `sms-inbound-monitor.py` missing
+    - `telegram-listener.service` -> `telegram-listener.sh` missing
+  - Inventory groups root scripts into:
+    - active script files
+    - manual utility candidates
+    - feature automation candidates
+    - demo/test/scenario files
+    - core Vesta library/agent modules
+    - archive candidates for later review
+- Behavior intentionally preserved:
+  - no scripts deleted
+  - no scripts moved
+  - no systemd units changed
+  - no API source changed
+  - no frontend source changed
+  - no deploy required
+  - no API restart required
+- Verification:
+  - `python3 scripts/vesta_smoke.py --public-only` passed with `15 passed, 0 failed`.
+  - `python3 scripts/vesta_smoke.py` passed with `30 passed, 0 failed`.
+- P4Q2 status:
+  - complete as a non-destructive inventory pass
+- Next shorthand:
+  - `xx` should move to P4Q3: Database Startup/Migration Cleanup.
+  - `go` would continue P4Q2 with deeper import/reference checks before any archive action.
