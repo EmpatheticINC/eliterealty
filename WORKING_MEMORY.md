@@ -1739,3 +1739,44 @@ Date: 2026-04-10
 - No frontend build or deploy was needed.
 - Next recommended slice:
   - P2Q3 Broker revenue and ROI snapshot boundary.
+
+## 2026-04-11 P2Q3: Broker ROI Snapshot Boundary
+
+- Completed a conservative P2Q3 backend-only broker ROI boundary extraction.
+- Production source files changed:
+  - `/home/empathetic/.openclaw/workspace/api/broker_roi_snapshots.py`
+  - `/home/empathetic/.openclaw/workspace/api/routers/broker_portal.py`
+- Added shared broker ROI snapshot persistence module:
+  - `api/broker_roi_snapshots.py`
+- New shared functions:
+  - `ensure_roi_snapshots_table(conn)`
+  - `upsert_roi_snapshot(conn, brokerage_id, snapshot)`
+  - `roi_history(conn, brokerage_id, days=30)`
+- Broker router now imports compatibility aliases:
+  - `ensure_roi_snapshots_table as _ensure_roi_snapshots_table`
+  - `upsert_roi_snapshot as _upsert_roi_snapshot`
+  - `roi_history as _roi_history`
+- Existing broker call sites were left intact:
+  - `capture_roi_snapshots_for_all_brokerages(...)`
+  - `/api/broker/revenue`
+  - `/api/broker/roi_history`
+- Behavior intentionally preserved:
+  - broker revenue calculation stayed in `broker_portal.py`
+  - distinct-FUB CTE/dedupe logic untouched
+  - broker snapshot table schema untouched
+  - snapshot upsert values and conflict behavior unchanged
+  - ROI history response envelope unchanged
+  - raw lead row counts versus distinct lead counts untouched
+  - team/agent proportional allocation logic untouched
+  - Investor snapshot behavior untouched
+  - FUB sync, ownership, and dedupe untouched
+- Verification:
+  - Pre-change `python3 scripts/vesta_smoke.py` passed with `26 passed, 0 failed`.
+  - `python3 -m py_compile /home/empathetic/.openclaw/workspace/api/broker_roi_snapshots.py /home/empathetic/.openclaw/workspace/api/routers/broker_portal.py` passed.
+  - Restarted `vesta-api.service`; service active and `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - Post-change `python3 scripts/vesta_smoke.py` passed with `26 passed, 0 failed`.
+  - Direct snapshot-history helper sanity check returned keys `['days', 'delta', 'latest', 'points', 'previous']`, `days` value `30`, and `points` type `list`.
+- No frontend source changed.
+- No frontend build or deploy was needed.
+- Next recommended slice:
+  - P2Q4 Investor aggregate proof/snapshot builder boundary.
