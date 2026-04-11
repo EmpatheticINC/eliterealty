@@ -1655,3 +1655,45 @@ Date: 2026-04-10
   - frontend build/deploy is only required if frontend source changes, which P2 should generally avoid
 - Recommended next action:
   - begin P2Q1 with the smallest shared ROI helper extraction, converting Pipeline revenue-protection math first and leaving Broker/Investor behavior untouched in the first slice.
+
+## 2026-04-11 P2Q1: Shared ROI Math Helper
+
+- Completed P2Q1 backend-only helper extraction.
+- Production source files changed:
+  - `/home/empathetic/.openclaw/workspace/api/roi_assumptions.py`
+  - `/home/empathetic/.openclaw/workspace/api/routers/pipeline.py`
+  - `/home/empathetic/.openclaw/workspace/api/routers/broker_portal.py`
+- Added shared ROI helper surface in `api/roi_assumptions.py`:
+  - `STAGE_CLOSE_PROBABILITIES`
+  - `stage_probability(stage, default=0.05)`
+  - `parse_budget(raw, assumptions=None)`
+  - `lead_gci(budget_raw, stage, weighted=True, assumptions=None)`
+- Pipeline revenue protection now uses shared ROI helpers instead of local `_STAGE_PROB`, `_COMMISSION_RATE`, `_DEFAULT_HOME_VALUE`, and `_parse_budget`.
+- Broker revenue helpers now use the shared ROI helper source through compatibility aliases/wrappers:
+  - `_STAGE_PROB = STAGE_CLOSE_PROBABILITIES`
+  - `_parse_budget(...)` delegates to `parse_budget(...)`
+  - `_lead_gci(...)` delegates to `lead_gci(...)`
+- Behavior intentionally preserved:
+  - ROI assumption default values unchanged
+  - stage probability values unchanged
+  - budget fallback value unchanged
+  - commission rate unchanged
+  - Pipeline `revenue_protection` payload keys unchanged
+  - Broker revenue/snapshot endpoint contracts unchanged
+  - Investor privacy/share-link behavior untouched
+  - FUB sync, ownership, and dedupe untouched
+- Verification:
+  - Pre-change `python3 scripts/vesta_smoke.py` passed with `26 passed, 0 failed`.
+  - `python3 -m py_compile /home/empathetic/.openclaw/workspace/api/roi_assumptions.py /home/empathetic/.openclaw/workspace/api/routers/pipeline.py /home/empathetic/.openclaw/workspace/api/routers/broker_portal.py` passed.
+  - Restarted `vesta-api.service`; service active and `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - Post-change `python3 scripts/vesta_smoke.py` passed with `26 passed, 0 failed`.
+  - Helper sanity check confirmed expected old math:
+    - blank budget fallback: `320000`
+    - `$310,000` budget parse: `310000.0`
+    - `Showing Homes` probability: `0.55`
+    - `$320,000` full GCI at 2.5%: `8000`
+    - `$320,000` appointment-set weighted GCI: `2400`
+- No frontend source changed.
+- No frontend build or deploy was needed.
+- Next recommended slice:
+  - P2Q2 revenue protection service boundary.
