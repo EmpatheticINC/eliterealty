@@ -1873,3 +1873,44 @@ Date: 2026-04-10
   - run `python3 scripts/vesta_smoke.py` after deploy/API health confirmation
 - Recommended next action:
   - begin P3Q1 with shared frontend format helpers and convert the two investor proof surfaces first.
+
+## 2026-04-11 P3Q1: Shared Frontend Formatting Utilities
+
+- Completed P3Q1 frontend utility extraction and deployed it live.
+- Production frontend source files changed:
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/utils/format.js`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorDashboard.jsx`
+  - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorSharePage.jsx`
+- Added shared frontend utility module:
+  - `src/utils/format.js`
+- New shared helpers:
+  - `formatCompactMoney(value, { fallback = '—' } = {})`
+  - `formatCompactDateTime(iso, { fallback = 'Not captured' } = {})`
+  - `formatPercent(value, { fallback = 'N/A' } = {})`
+- Converted investor proof surfaces first:
+  - authenticated Investor dashboard now uses shared money/date/percent helpers
+  - public Investor share page now uses shared money/date/percent helpers
+- Behavior intentionally preserved:
+  - no layout redesign
+  - no API calls changed
+  - no route behavior changed
+  - authenticated Investor dashboard still uses `—` money fallback
+  - public Investor share page still uses `-` money fallback
+  - date fallback still says `Not captured`
+  - approval-rate fallback still says `N/A`
+  - investor proof wording and privacy posture unchanged
+- Verification:
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `npm run deploy` passed.
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - `/investor` and `/investor/share` load the deployed frontend bundle.
+  - `python3 scripts/vesta_smoke.py` passed with `26 passed, 0 failed`.
+- Deployed bundle:
+  - `/api/ui/assets/index-BgMOPmOf.js`
+  - `/api/ui/assets/index-65vxhA9c.css`
+- No backend source changed.
+- P3Q1 status:
+  - complete for the first utility slice
+- Next recommended slice:
+  - P3Q2 Broker Portal component split by stable tab/section boundaries.
