@@ -1561,3 +1561,63 @@ Date: 2026-04-10
 - No production app behavior was changed in P1Q3.
 - Next recommended slice:
   - P1Q4 complexity budget and refactor boundaries.
+
+## 2026-04-11 P1Q4: Complexity Budget And Refactor Boundaries
+
+- Completed P1Q4 by documenting hard refactor boundaries before P2 begins.
+- Added durable boundary document:
+  - `REFACTOR_BOUNDARIES.md`
+- P1Q4 established no-go zones before P2 completion:
+  - OAuth/session/JWT behavior
+  - system-admin privacy boundaries
+  - investor aggregate-only privacy posture
+  - approval-gated email behavior
+  - live FUB row deletion/deduplication while John/Jane share the same FUB account
+  - FUB sync ownership/matching changes in the same slice as ROI math extraction
+  - manual edits to generated bundles
+  - `vesta-platform.service`
+  - destructive git/database commands
+- P1Q4 marked high-risk backend files:
+  - `api/routers/chat.py`
+  - `api/routers/broker_portal.py`
+  - `api/routers/pipeline.py`
+  - `api/routers/investor.py`
+  - `api/routers/admin.py`
+  - `api/routers/approvals.py`
+  - `api/fub_sync.py`
+  - `auth/session.py`
+  - `api/deps.py`
+- P1Q4 marked high-risk frontend files:
+  - `BrokerPortal.jsx`
+  - `Pipeline.jsx`
+  - `TeamPortal.jsx`
+  - `Settings.jsx`
+  - `AdminPanel.jsx`
+  - `InvestorDashboard.jsx`
+  - `InvestorSharePage.jsx`
+- Complexity budget targets:
+  - route handlers should trend thinner
+  - shared business rules should move out of routers when reused
+  - ROI assumptions, budget parsing, stage probabilities, and GCI helpers should have one backend source of truth
+  - React page files over 1,000 lines should be split by tab/section before major feature work continues there
+  - endpoint response contracts should remain stable unless a later phase explicitly changes them
+- P2 entry criteria:
+  - product surface inventory exists
+  - baseline smoke checklist exists
+  - `scripts/vesta_smoke.py` passes
+  - memory is current
+  - repo worktree is clean
+  - first P2 slice is limited to one boundary
+- Recommended first P2 slice:
+  - start P2Q1 with a narrow shared backend ROI math helper extraction
+  - do not change ROI assumption values or endpoint response shapes during extraction
+- Verification:
+  - `python3 scripts/vesta_smoke.py` passed with `26 passed, 0 failed`.
+- No production app behavior was changed in P1Q4.
+- P1 status:
+  - P1Q1 complete: product surface inventory
+  - P1Q2 complete: visible/internal phase copy cleanup
+  - P1Q3 complete: baseline smoke harness/checklist
+  - P1Q4 complete: refactor boundaries and complexity budget
+- Next recommended phase:
+  - P2: centralize business rules, starting with P2Q1 shared ROI math helper extraction.
