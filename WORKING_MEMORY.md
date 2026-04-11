@@ -861,3 +861,33 @@ Date: 2026-04-10
   - `/tmp/vesta-api.log` still contains older `/api/demo/snapshot` 404 entries from before this cleanup, but the current live public pages no longer call `/api/demo/*`.
 - P6 status:
   - P6 is now close to complete. Remaining optional polish would be visual review in a browser/PDF output and any final investor wording tweaks after user review.
+
+## 2026-04-10 Saleswise CMA / PDF Production Investigation
+
+- User asked whether the old Saleswise CMA Discord/Puppeteer flow can be tied into the current production web app for clients, and whether PDFs can be sent through the web-based chat.
+- No Codex `puppet` skill is available in this session. The local production equivalent is the Puppeteer-based Saleswise script at:
+  - `/home/empathetic/.openclaw/skills/fub-status/generate-cma.js`
+- Findings:
+  - Production web chat already supports generated file downloads through `/api/chat/file/{name}` in `/home/empathetic/.openclaw/workspace/api/routers/chat.py`.
+  - Production chat already detects CMA prompts and can call the Saleswise Puppeteer script, copy a generated PDF into `/tmp/vesta_files`, and return a scoped PDF download URL to the authenticated chat session.
+  - The frontend chat already renders a download button when a chat response includes `file_url` and `file_name`.
+  - The current chat supports generated/downloadable PDFs. It does not yet support arbitrary user-uploaded PDF attachments in chat.
+  - The old Discord delivery path still exists in `/home/empathetic/.openclaw/workspace/cma_deliver.py` and can upload a CMA PDF to Discord, but the production client-safe path should prefer web-chat download or approval-gated email.
+- Fixes completed:
+  - Updated `/home/empathetic/.openclaw/workspace/outlook_mail.py` so `attachment_path` is accepted by `send_email_detailed`, forwarded by `send_email`, size-checked, base64 encoded, and attached as a Microsoft Graph file attachment.
+  - Updated `/home/empathetic/.openclaw/workspace/vesta_approvals.py` so approved queued CMA emails pass the stored `attachment_path` into Outlook sending.
+  - Replaced old hosted/visual email signature block with a Vesta/Aiden text-based signature to avoid hidden old-brand image bleed.
+  - Updated `/home/empathetic/.openclaw/workspace/cma_deliver.py` fallback CMA summary PDF branding from old Michigan/Elite labels to Aiden/Vesta independent branding.
+  - Updated `/home/empathetic/.openclaw/skills/fub-status/generate-cma.js` CMA email footer branding to Aiden/Vesta independent branding.
+- Branding verification:
+  - No remaining matches for `Elite Team`, `Michigan Top Producers`, `michigantopproducers`, `Eliterealty`, or `eliterealty` in the CMA/email files touched during this pass.
+- Verification:
+  - `python3 -m py_compile /home/empathetic/.openclaw/workspace/cma_deliver.py /home/empathetic/.openclaw/workspace/vesta_approvals.py /home/empathetic/.openclaw/workspace/outlook_mail.py /home/empathetic/.openclaw/workspace/api/routers/chat.py`
+  - `node --check /home/empathetic/.openclaw/skills/fub-status/generate-cma.js`
+  - `systemctl --user restart vesta-api.service`
+  - `/health` returned `{"status":"ok","db":"ok","version":"1.0.0"}`
+  - Production API service active after restart with parent PID `766664`.
+- Production recommendation:
+  - Saleswise CMA can be tied into clients, but the safest launch flow is chat request -> generated PDF download for authenticated user -> optional approval-gated email with attachment.
+  - Do not make Saleswise CMA a direct unattended client-send flow yet because Puppeteer/Saleswise selectors and login session state are brittle and CMA generation can take several minutes.
+  - A more robust future slice would convert CMA generation into a background job with progress status, retry/failure visibility, and admin/broker audit events.
