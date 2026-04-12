@@ -3277,7 +3277,7 @@ Date: 2026-04-10
 - Started P7 after user sent `pp`.
 - P7 quarter map:
   - P7Q1 Investor Proof Pack Readiness: complete
-  - P7Q2 Share-Link Presentation + Public Investor Readout: pending
+  - P7Q2 Share-Link Presentation + Public Investor Readout: complete
   - P7Q3 Investor Follow-Up / Meeting Workflow: pending
   - P7Q4 Investor Packaging Closeout + Launch QA: pending
 - P7Q1 scope:
@@ -3311,4 +3311,27 @@ Date: 2026-04-10
 - Next shorthand:
   - `xx` should move to P7Q2 Share-Link Presentation + Public Investor Readout.
   - `go` should continue P7Q1 only if we want extra readiness criteria.
+  - `pp` should move to P8 after P7Q4 is complete.
+- P7Q2 scope:
+  - Upgrade the public investor share link so outside reviewers see the same proof-pack readiness context as the authenticated investor dashboard.
+  - Keep the public page read-only, expiring/revocable, and aggregate-only.
+  - Make the investor readout clearer by placing readiness score, readiness status, readiness checks, and next-step language directly in the share report.
+- P7Q2 status:
+  - Completed public share-link readiness presentation in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorSharePage.jsx`.
+  - Added `Share-Link Readiness`, `Readiness Score`, readiness-check rows, and a top `Readiness` trust badge to the public investor report.
+  - Updated the report status panel to include `Proof Readiness`.
+  - Tightened the final diligence CTA so investors are told to use the readiness score as the report-quality gate before requesting a walkthrough.
+  - No backend change was required because P7Q1 already made readiness available on public investor snapshots.
+  - Deployed frontend bundle `index-YThx1WZt.js` and CSS bundle `index-C7kj-SPM.css` to both `/home/empathetic/.openclaw/workspace/api/static/assets/` and `/home/empathetic/html/vesta-tech/assets/`.
+  - Verification passed:
+    - `npm run lint`
+    - `npm run build`
+    - `npm run deploy`
+    - `curl -sS http://127.0.0.1:8080/health`
+    - live asset grep for `Share-Link Readiness`, `send-ready check`, `Read the readiness gate`, `report-quality gate`, and `Readiness Score`
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
+- Next shorthand:
+  - `xx` should move to P7Q3 Investor Follow-Up / Meeting Workflow.
+  - `go` should continue P7Q2 only if we want additional public-readout polish.
   - `pp` should move to P8 after P7Q4 is complete.
