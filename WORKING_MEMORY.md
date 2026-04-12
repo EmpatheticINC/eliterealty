@@ -2741,6 +2741,12 @@ Date: 2026-04-10
   - Production app source under `/home/empathetic/.openclaw/workspace` is not tracked by the `eliterealty.homes` Git repo; this working memory and pushed Track 3 commits are the durable action log.
   - Integration classes in `tests/test_api_integration.py` should be run sequentially against SQLite fixtures, not in parallel.
   - `vesta-platform.service` is intentionally disabled and should not be restarted or re-enabled for production.
+  - `ollama.service` is intentionally disabled as of 2026-04-11 because local LLMs are no longer used for production. Deleted local Ollama models:
+    - `gemma4:26b`
+    - `gemma4:e4b`
+    - `vesta-llm:latest`
+    - `nomic-embed-text:latest`
+  - Ollama cleanup freed the main RAM pressure source: RAM moved from about `10 GiB used / 4.4 GiB available` to about `3.5 GiB used / 11 GiB available`; `/home/empathetic/.ollama/models` dropped from about `31G` to `20K`. Swap may remain partially occupied until WSL/Linux naturally reclaims it or the host restarts; passwordless sudo was unavailable for a swap refresh.
   - Disabled stale units remain intentionally untouched:
     - `vesta-composio.service`
     - `sms-inbound-monitor.service`
