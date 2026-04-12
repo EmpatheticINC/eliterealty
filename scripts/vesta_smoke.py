@@ -260,6 +260,7 @@ def validate_admin_system(_status, _headers, _text, parsed):
     assert "ai_quality" in parsed, "missing ai_quality"
     assert "fub_reliability" in parsed, "missing fub_reliability"
     assert "sender_delivery" in parsed, "missing sender_delivery"
+    assert "data_integrity_closeout" in parsed, "missing data_integrity_closeout"
     background_jobs = parsed.get("background_jobs") or {}
     assert isinstance(background_jobs.get("summary"), dict), "missing background_jobs.summary"
     jobs = background_jobs.get("jobs")
@@ -273,11 +274,16 @@ def validate_admin_system(_status, _headers, _text, parsed):
     assert isinstance(sender_delivery.get("drafts"), dict), "missing sender_delivery.drafts"
     assert isinstance(sender_delivery.get("activity_30d"), dict), "missing sender_delivery.activity_30d"
     assert sender_delivery.get("privacy", {}).get("basis") == "aggregate_delivery_signals", "unexpected sender delivery basis"
+    data_integrity = parsed.get("data_integrity_closeout") or {}
+    assert isinstance(data_integrity.get("checks"), dict), "missing data_integrity_closeout.checks"
+    assert isinstance(data_integrity.get("counts"), dict), "missing data_integrity_closeout.counts"
+    assert data_integrity.get("checks", {}).get("admin_scope") == "aggregate_only", "unexpected admin scope"
+    assert data_integrity.get("checks", {}).get("demo_api_enabled") is False, "demo API should be disabled in production"
     assert any(
         job.get("unit") == "vesta-platform.service" and job.get("classification") == "disabled"
         for job in jobs
     ), "legacy vesta-platform unit should be classified as disabled"
-    for key in ("ops_overview", "ai_quality", "fub_reliability", "sender_delivery"):
+    for key in ("ops_overview", "ai_quality", "fub_reliability", "sender_delivery", "data_integrity_closeout"):
         paths = forbidden_key_paths(parsed.get(key), FORBIDDEN_PRIVACY_KEYS)
         assert not paths, f"{key} exposed forbidden key(s): {', '.join(paths[:8])}"
 

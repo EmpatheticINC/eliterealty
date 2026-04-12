@@ -3127,7 +3127,7 @@ Date: 2026-04-10
   - P6Q1 Integration Readiness Command: complete
   - P6Q2 FUB Sync Reliability Proof: complete
   - P6Q3 Sender And Delivery Reliability: complete
-  - P6Q4 Data Integrity Closeout: pending
+  - P6Q4 Data Integrity Closeout: complete
 - P6Q1 scope:
   - Add an admin-facing integration reliability layer using existing live aggregate system signals.
   - Focus on FUB connected coverage, sender readiness, FUB sync freshness, email monitor freshness, speed-to-lead freshness, and expected background job health.
@@ -3234,3 +3234,40 @@ Date: 2026-04-10
   - `xx` should move to P6Q4 Data Integrity Closeout.
   - `go` should continue P6Q3 only if we want extra sender drilldown cards.
   - `pp` should move to P7 Investor Packaging And Sharing after P6Q4 is complete.
+- P6Q4 scope:
+  - Close P6 by tying integration reliability into one honest aggregate proof layer.
+  - Verify database counter readiness, distinct FUB contact basis, sender delivery basis, disabled demo API routes, and aggregate-only admin scope.
+  - Keep the closeout proof out of client-level visibility: no recipients, message bodies, subjects, or client pipeline rows.
+- P6Q4 status:
+  - Completed backend data integrity closeout payload in `/home/empathetic/.openclaw/workspace/api/routers/admin.py`.
+  - `/api/admin/system` now returns `data_integrity_closeout` with:
+    - `status`
+    - `score`
+    - `checks.database_tables_ready`
+    - `checks.fub_basis == distinct_fub_contacts`
+    - `checks.sender_basis == aggregate_delivery_signals`
+    - `checks.demo_api_enabled`
+    - `checks.admin_scope == aggregate_only`
+    - aggregate counts for database tables, lead rows, distinct FUB contacts, shared-owner rows, production members, sender-ready members, and awaiting delivery review
+  - Completed frontend closeout panel in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/AdminPanel.jsx`.
+  - Added `Data Integrity Closeout` and `Closeout Checklist` sections to the Admin System tab.
+  - Confirmed `/home/empathetic/.openclaw/env` keeps `VESTA_PUBLIC_DEMO_API=false` so public demo API routes stay disabled in production.
+  - Added smoke validator coverage in `/home/empathetic/eliterealty.homes/scripts/vesta_smoke.py` so future full smoke runs verify `data_integrity_closeout.checks`, `data_integrity_closeout.counts`, `admin_scope == aggregate_only`, `demo_api_enabled is False`, and no client-sensitive keys.
+  - Fixed a closeout regression caught by full smoke:
+    - Imported `env_flag_enabled` into `/home/empathetic/.openclaw/workspace/api/routers/admin.py` after `/api/admin/system` returned HTTP 500 during the authenticated smoke run.
+  - Restarted `vesta-api.service` after backend changes; health returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - Deployed frontend bundle `index-p7uHS_V5.js` and CSS bundle `index-sIxK1Mv0.css` to both `/home/empathetic/.openclaw/workspace/api/static/assets/` and `/home/empathetic/html/vesta-tech/assets/`.
+  - Verification passed:
+    - `python3 -m compileall -q /home/empathetic/.openclaw/workspace/api/routers/admin.py`
+    - `npm run lint`
+    - `npm run build`
+    - `npm run deploy`
+    - `curl -sS http://127.0.0.1:8080/health`
+    - live asset grep for `Data Integrity Closeout`, `Close P6 with proof`, `Closeout Checklist`, `Public demo API disabled`, and `integration layer is honest`
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
+- P6 status:
+  - P6 Integrations And Data Reliability is complete and closed.
+- Next shorthand:
+  - `pp` should move to P7 Investor Packaging And Sharing.
+  - `xx` should be mapped after P7 starts.
