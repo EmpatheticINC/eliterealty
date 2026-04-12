@@ -2850,7 +2850,7 @@ Date: 2026-04-10
   - P2Q1 Broker Value Brief: complete
   - P2Q2 Broker Activation Loop: complete
   - P2Q3 Broker Team Adoption Signals: complete
-  - P2Q4 Broker Renewal / Proof Pack Closeout: next
+  - P2Q4 Broker Renewal / Proof Pack Closeout: complete
 - P2Q1 status:
   - Completed broker conversion / retention value brief in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/BrokerPortal.jsx`.
   - Added broker overview `Broker Value Brief` section directly under the executive ROI snapshot.
@@ -2893,6 +2893,21 @@ Date: 2026-04-10
     - live asset grep for `Team Adoption Signals`, `Prove the brokerage is using the operating layer`, `Team Coverage`, `Sender Readiness`, `FUB Coverage`, and `Broker Coaching Prompt`
     - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
     - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
+- P2Q4 status:
+  - Completed broker renewal / proof pack closeout in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/BrokerPortal.jsx`.
+  - Added a `Broker Renewal Closeout` panel to the broker revenue tab.
+  - The renewal closeout packages measurable broker value: protected pipeline, team adoption coverage, sender readiness, AI lift, approval queue status, and the next renewal move.
+  - Added a copyable renewal memo for broker meetings and expanded the CSV proof pack with adoption/readiness fields.
+  - Kept the proof pack aggregate-only with no client-level pipeline visibility.
+  - Deployed frontend bundle `index-urXkIu4o.js` and CSS bundle `index-DIvSxefj.css` to both `/home/empathetic/.openclaw/workspace/api/static/assets/` and `/home/empathetic/html/vesta-tech/assets/`.
+  - Verification passed:
+    - `npm run lint`
+    - `npm run build`
+    - `npm run deploy`
+    - `curl -sS http://127.0.0.1:8080/health`
+    - live asset grep for `Broker Renewal Closeout`, `Copy renewal memo`, `Export proof CSV`, `Next Renewal Move`, `Renewal proof ready`, and `Renewal with action items`
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
 - Next shorthand:
-  - `xx` should move to P2Q4 Broker Renewal / Proof Pack Closeout.
-  - `pp` should move to P3 Lead/Agent Productivity after P2Q4 is complete.
+  - `pp` should move to P3 Lead/Agent Productivity.
+  - `xx` should be mapped after P3 is planned or started.
