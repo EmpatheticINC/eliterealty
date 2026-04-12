@@ -3052,7 +3052,7 @@ Date: 2026-04-10
 - P5 breakdown:
   - P5Q1 Chat Safety & Context Boundary: complete
   - P5Q2 Approval / Draft Guardrails: complete
-  - P5Q3 Pipeline-to-AI Privacy Controls: pending
+  - P5Q3 Pipeline-to-AI Privacy Controls: complete
   - P5Q4 Admin AI Safety Proof Closeout: pending
 - P5Q1 status:
   - Completed chat safety and context boundary in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/Chat.jsx`.
@@ -3086,6 +3086,21 @@ Date: 2026-04-10
     - live asset grep for `Draft Safety Review`, `Client-safe send check`, `Reviewed & Send`, `Client-safe draft check`, `human review before sending`, and `Needs safety read`
     - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
     - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
+- P5Q3 status:
+  - Completed pipeline-to-AI privacy controls in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/Pipeline.jsx`.
+  - Updated pipeline-to-chat prompts to include an explicit client-safe context boundary: no SSNs, payment details, passwords, private keys, banking instructions, or unnecessary client identity details.
+  - Updated the hot-lead quick `Draft Response` shortcut to use the same client-safe prompt boundary.
+  - Updated the `Pipeline to Chat Handoff` panel copy from useful context to safe context and changed the status pill to `Client-safe context`.
+  - Added Included/Excluded context cards showing what is passed to Chat and what should stay out of the AI prompt.
+  - Deployed frontend bundle `index-DTROtFPu.js` and CSS bundle `index-CJYiHWHg.css` to both `/home/empathetic/.openclaw/workspace/api/static/assets/` and `/home/empathetic/html/vesta-tech/assets/`.
+  - Verification passed:
+    - `npm run lint`
+    - `npm run build`
+    - `npm run deploy`
+    - `curl -sS http://127.0.0.1:8080/health`
+    - live asset grep for `Send Vesta the safe context`, `Client-safe context`, `Use this client-safe pipeline summary`, `unnecessary client identity details`, and `SSNs, payment data, passwords`
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
 - Next shorthand:
-  - `xx` should move to P5Q3 Pipeline-to-AI Privacy Controls.
+  - `xx` should move to P5Q4 Admin AI Safety Proof Closeout.
   - `pp` should move to P6 Integrations And Data Reliability after P5Q4 is complete.
