@@ -302,6 +302,12 @@ def validate_investor_snapshot(_status, _headers, _text, parsed):
     assert isinstance(readiness.get("score"), int), "missing investor readiness score"
     assert isinstance(readiness.get("checks"), list), "missing investor readiness checks"
     assert any(check.get("label") == "Privacy boundary" for check in readiness.get("checks", [])), "missing investor privacy readiness check"
+    launch_closeout = parsed.get("launch_closeout") or {}
+    assert launch_closeout.get("status") in {"launch_ready", "needs_context", "not_ready"}, "missing investor launch closeout status"
+    assert isinstance(launch_closeout.get("checks"), list), "missing investor launch closeout checks"
+    assert any(check.get("label") == "Controlled share route" for check in launch_closeout.get("checks", [])), "missing controlled share closeout check"
+    assert (launch_closeout.get("privacy") or {}).get("basis") == "aggregate_launch_packaging", "unexpected launch closeout privacy basis"
+    assert (launch_closeout.get("privacy") or {}).get("client_records_exposed") is False, "launch closeout client_records_exposed not false"
     privacy = parsed.get("privacy") or {}
     assert privacy.get("client_records_exposed") is False, "client_records_exposed not false"
     paths = forbidden_key_paths(parsed, FORBIDDEN_PRIVACY_KEYS)

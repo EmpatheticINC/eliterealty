@@ -3406,3 +3406,63 @@ Date: 2026-04-10
   - `python3 scripts/vesta_smoke.py` -> 45 passed, 0 failed
 - Important note:
   - Older legacy/background scripts still contain literal `localhost:11434` references, but the local services/timers that would run them are disabled. The active shared production LLM wrapper now blocks local fallback.
+
+## 2026-04-12 P7Q4 Investor Packaging Closeout + Launch QA
+
+- User sent `xx`, moving from P7Q3 to P7Q4.
+- P7Q4 scope:
+  - Close P7 by tying the investor proof pack, controlled share links, CSV export, follow-up workflow, and privacy boundary into one launch-readiness closeout.
+  - Keep the closeout layer aggregate-only: no client names, client records, recipients, message bodies, or deal-level pipeline rows.
+  - Verify the live API contract before moving to P8.
+- P7Q4 status:
+  - Completed backend launch closeout payload in `/home/empathetic/.openclaw/workspace/api/investor_snapshot_builder.py`.
+  - `/api/investor/snapshot` now returns `launch_closeout` with:
+    - `status`
+    - `checks`
+    - `next_step`
+    - `privacy.basis == aggregate_launch_packaging`
+    - `privacy.client_records_exposed == false`
+    - `privacy.client_names_exposed == false`
+  - Completed CSV export support in `/home/empathetic/.openclaw/workspace/api/routers/investor.py`.
+  - `snapshot.csv` now includes investor launch closeout status, next step, privacy basis, and launch closeout check rows.
+  - Completed frontend closeout panel in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorDashboard.jsx`.
+  - Added `Investor Launch Closeout`, closeout status, launch next step, and closeout check cards to the investor dashboard.
+  - Added launch closeout status and next step to the copied investor memo.
+  - Fixed a lint blocker in `/home/empathetic/.openclaw/workspace/vesta-app/src/components/CommandPalette.jsx` by deriving command results with `useMemo` and moving command execution into a stable callback before keyboard handling.
+  - Added smoke validator coverage in `/home/empathetic/eliterealty.homes/scripts/vesta_smoke.py` so future full smoke runs verify launch closeout status, checks, privacy basis, and client-record privacy flags.
+  - Restarted `vesta-api.service` after backend changes; health returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - Verified live API closeout probe:
+    - `launch_closeout.status == launch_ready`
+    - closeout checks include `Controlled share route`
+    - `launch_closeout.privacy.basis == aggregate_launch_packaging`
+  - Verification passed:
+    - `python3 -m compileall /home/empathetic/.openclaw/workspace/api/investor_snapshot_builder.py /home/empathetic/.openclaw/workspace/api/routers/investor.py /home/empathetic/eliterealty.homes/scripts/vesta_smoke.py`
+    - `npm run lint`
+    - `npm run build`
+    - `curl -sS http://127.0.0.1:8080/health`
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 45 passed, 0 failed
+- Deployment note:
+  - Frontend deployment was intentionally held because Claude was actively modifying design/app files in the same window, including:
+    - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/Layout.jsx`
+    - `/home/empathetic/.openclaw/workspace/vesta-app/src/components/EmptyState.jsx`
+    - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/Pipeline.jsx`
+  - Before deploying the P7Q4 frontend, run a fresh collision check, then `npm run lint`, `npm run build`, `npm run deploy`, health check, live asset grep, and both smoke runs.
+- P7 status:
+  - P7 is code-complete and API-verified.
+  - Treat P7 as fully closed only after the frontend deploy is completed after Claude's active UI work settles.
+- Next shorthand:
+  - `go` should complete the pending P7Q4 frontend deploy after a fresh Claude-collision check.
+  - `pp` should move to P8 Performance And Mobile Polish only after the P7Q4 frontend deploy is safely completed.
+
+## 2026-04-12 Improvement Mode Request
+
+- User said Claude is working on the same app and asked to shift into improvement mode:
+  - Deep dive the website and app for marketability improvements.
+  - Run simplification/professionalization passes on code.
+  - Continue iterative loops around 3-minute intervals.
+  - Investigate/install Nexus if it helps map integrations and code relationships.
+- Coordination rule while Claude is active:
+  - Do not edit files Claude is actively touching unless the user explicitly asks for a merge/repair.
+  - Prefer backend contracts, tests, smoke coverage, documentation, and narrowly scoped non-overlapping fixes while Claude is designing.
+  - Before every deploy, run a recent-file collision check with `find /home/empathetic/.openclaw/workspace/vesta-app/src -mmin -2 -type f`.
