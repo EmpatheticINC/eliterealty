@@ -2983,7 +2983,7 @@ Date: 2026-04-10
   - `xx` should move to P4Q2 Member & Access Assurance.
 - P4 breakdown:
   - P4Q1 Admin Trust Overview: complete
-  - P4Q2 Member & Access Assurance: next
+  - P4Q2 Member & Access Assurance: complete
   - P4Q3 System & AI Control Center: pending
   - P4Q4 Audit / Investor Proof Closeout: pending
 - P4Q1 status:
@@ -3000,6 +3000,21 @@ Date: 2026-04-10
     - live asset grep for `Admin Trust Center`, `Verify production health without client visibility`, and `Client pipeline`
     - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
     - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
+- P4Q2 status:
+  - Completed member and access assurance in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/AdminPanel.jsx`.
+  - Added a `Member Access Assurance` section above the members roster with aggregate-only access oversight.
+  - The panel shows admin seat count, active members, missing auth signals, org assignment gaps, auth coverage, pending members, and inactive non-pending roster notes for audit continuity.
+  - Added an `Access Check` column to each member row with safe flags for pending, inactive, missing auth signal, not onboarded, and org assignment gaps.
+  - Kept the view client-safe: it only uses account, onboarding, role, brokerage, and team metadata, with no client pipeline access.
+  - Deployed frontend bundle `index-DurU9W-_.js` and CSS bundle `index-BKLKJ6Gp.css` to both `/home/empathetic/.openclaw/workspace/api/static/assets/` and `/home/empathetic/html/vesta-tech/assets/`.
+  - Verification passed:
+    - `npm run lint`
+    - `npm run build`
+    - `npm run deploy`
+    - `curl -sS http://127.0.0.1:8080/health`
+    - live asset grep for `Member Access Assurance`, `Review who can operate the platform`, `Access Check`, `Org Gaps`, and `Missing Auth`
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
 - Next shorthand:
-  - `xx` should move to P4Q2 Member & Access Assurance.
+  - `xx` should move to P4Q3 System & AI Control Center.
   - `pp` should move to P5 Client-Safe AI Layer after P4Q4 is complete.
