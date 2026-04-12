@@ -2913,8 +2913,8 @@ Date: 2026-04-10
   - `xx` should be mapped after P3 is planned or started.
 - P3 breakdown:
   - P3Q1 Team Productivity Command Strip: complete
-  - P3Q2 Agent Action Prioritization: next
-  - P3Q3 Approval Speed / Quality Flow: pending
+  - P3Q2 Agent Action Prioritization: complete
+  - P3Q3 Approval Speed / Quality Flow: next
   - P3Q4 Pipeline-to-Chat Handoff Polish: pending
 - P3Q1 status:
   - Completed team productivity command strip in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/TeamPortal.jsx`.
@@ -2931,6 +2931,21 @@ Date: 2026-04-10
     - live asset grep for `Today's Productivity Plan`, `Action Load`, `Follow-up Focus`, `Approval Focus`, and `Readiness Focus`
     - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
     - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
+- P3Q2 status:
+  - Completed agent action prioritization in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/TeamPortal.jsx`.
+  - Added an `Agent Action Priorities` panel above the agents roster.
+  - The panel ranks agents using existing live team-scoped fields only: setup blockers, inactivity, zero-action weeks, contact gaps, actions, contacts, and appointments.
+  - Added summary counters for setup blockers, quiet agents, and top output.
+  - Updated the agents roster to sort by action priority and show each agent's next coaching action.
+  - Deployed frontend bundle `index-LcqLhE_p.js` and CSS bundle `index-DxnHkjXo.css` to both `/home/empathetic/.openclaw/workspace/api/static/assets/` and `/home/empathetic/html/vesta-tech/assets/`.
+  - Verification passed:
+    - `npm run lint`
+    - `npm run build`
+    - `npm run deploy`
+    - `curl -sS http://127.0.0.1:8080/health`
+    - live asset grep for `Agent Action Priorities`, `Coach the right person first`, `Setup:`, `Needs activity`, `Power user`, `Assign follow-up`, `Push contacts`, and `Top Output`
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
 - Next shorthand:
-  - `xx` should move to P3Q2 Agent Action Prioritization.
+  - `xx` should move to P3Q3 Approval Speed / Quality Flow.
   - `pp` should move to P4 Admin Trust Center after P3Q4 is complete.
