@@ -297,6 +297,11 @@ def validate_broker_health(_status, _headers, _text, parsed):
 def validate_investor_snapshot(_status, _headers, _text, parsed):
     assert isinstance(parsed, dict), "investor snapshot response was not JSON"
     assert parsed.get("proof"), "missing proof"
+    readiness = (parsed.get("proof") or {}).get("readiness") or {}
+    assert readiness.get("status") in {"ready", "needs_context", "not_ready"}, "missing investor readiness status"
+    assert isinstance(readiness.get("score"), int), "missing investor readiness score"
+    assert isinstance(readiness.get("checks"), list), "missing investor readiness checks"
+    assert any(check.get("label") == "Privacy boundary" for check in readiness.get("checks", [])), "missing investor privacy readiness check"
     privacy = parsed.get("privacy") or {}
     assert privacy.get("client_records_exposed") is False, "client_records_exposed not false"
     paths = forbidden_key_paths(parsed, FORBIDDEN_PRIVACY_KEYS)

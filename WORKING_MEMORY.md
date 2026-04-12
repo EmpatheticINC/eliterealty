@@ -3271,3 +3271,44 @@ Date: 2026-04-10
 - Next shorthand:
   - `pp` should move to P7 Investor Packaging And Sharing.
   - `xx` should be mapped after P7 starts.
+
+## 2026-04-12 P7 Investor Packaging And Sharing
+
+- Started P7 after user sent `pp`.
+- P7 quarter map:
+  - P7Q1 Investor Proof Pack Readiness: complete
+  - P7Q2 Share-Link Presentation + Public Investor Readout: pending
+  - P7Q3 Investor Follow-Up / Meeting Workflow: pending
+  - P7Q4 Investor Packaging Closeout + Launch QA: pending
+- P7Q1 scope:
+  - Add an investor package readiness layer so the product can answer whether the proof pack is ready to send or needs more context.
+  - Use real aggregate snapshot and proof signals only: ROI snapshot coverage, revenue basis, configured assumptions, proof-point depth, trend depth, and privacy boundary.
+  - Keep the readiness layer client-safe: no client names, client records, recipients, message bodies, or deal-level pipeline rows.
+- P7Q1 status:
+  - Completed backend readiness payload in `/home/empathetic/.openclaw/workspace/api/investor_snapshot_builder.py`.
+  - `/api/investor/snapshot` now returns `proof.readiness` with:
+    - `status`
+    - `score`
+    - `checks`
+    - `recommendation`
+  - Completed CSV export support in `/home/empathetic/.openclaw/workspace/api/routers/investor.py`.
+  - `snapshot.csv` now includes proof pack readiness status, score, recommendation, and readiness-check rows.
+  - Completed frontend readiness gate in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorDashboard.jsx`.
+  - Added `Proof Pack Readiness`, `Readiness Score`, and readiness-check cards to the investor dashboard near controlled sharing and proof metrics.
+  - Added readiness score/recommendation to the copied investor memo.
+  - Added smoke validator coverage in `/home/empathetic/eliterealty.homes/scripts/vesta_smoke.py` so future full smoke runs verify investor readiness status, score, checks, and the privacy readiness check.
+  - Restarted `vesta-api.service` after backend changes; health returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - Deployed frontend bundle `index-O3_bfvzm.js` and CSS bundle `index-B1SYVjqU.css` to both `/home/empathetic/.openclaw/workspace/api/static/assets/` and `/home/empathetic/html/vesta-tech/assets/`.
+  - Verification passed:
+    - `python3 -m compileall -q /home/empathetic/.openclaw/workspace/api/investor_snapshot_builder.py /home/empathetic/.openclaw/workspace/api/routers/investor.py`
+    - `npm run lint`
+    - `npm run build`
+    - `npm run deploy`
+    - `curl -sS http://127.0.0.1:8080/health`
+    - live asset grep for `Proof Pack Readiness`, `Know whether the investor package`, `Readiness Score`, and `Privacy boundary`
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
+- Next shorthand:
+  - `xx` should move to P7Q2 Share-Link Presentation + Public Investor Readout.
+  - `go` should continue P7Q1 only if we want extra readiness criteria.
+  - `pp` should move to P8 after P7Q4 is complete.
