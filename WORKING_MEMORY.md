@@ -2775,7 +2775,7 @@ Date: 2026-04-10
 - P1 breakdown:
   - P1Q1 Investor Narrative: complete
   - P1Q2 ROI Proof Pack: complete
-  - P1Q3 Investor Share Polish: pending
+  - P1Q3 Investor Share Polish: complete
   - P1Q4 Conversion CTA / Next-Step Flow: pending
 - P1Q1 status:
   - Completed investor-facing narrative pass in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorDashboard.jsx`.
@@ -2805,6 +2805,22 @@ Date: 2026-04-10
     - live asset grep for `ROI Proof Pack`, `How the investor numbers hold together`, `How to read the numbers`, and `Investor-safe boundary`
     - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
     - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
+- P1Q3 status:
+  - Completed public investor share polish in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorSharePage.jsx`.
+  - Added a top trust/control bar with read-only access, aggregate scope, and privacy badges.
+  - Reworked the hero status card to show active link state, expiry, scope, and revocability.
+  - Added an executive signal strip for projected GCI basis, annual pace, operating leverage, and privacy boundary.
+  - Improved print/PDF handling in `/home/empathetic/.openclaw/workspace/vesta-app/src/index.css` with page margins, tighter section spacing, and print-safe backdrop handling.
+  - Deployed frontend bundle `index-8kQ7rG9N.js` and CSS bundle `index-B87NPBQp.css` to both `/home/empathetic/.openclaw/workspace/api/static/assets/` and `/home/empathetic/html/vesta-tech/assets/`.
+  - Verification passed:
+    - `npm run lint`
+    - `npm run build`
+    - `npm run deploy`
+    - `curl -sS http://127.0.0.1:8080/health`
+    - live asset grep for `Read-only investor link`, `Projected GCI Basis`, `Active Link`, `revocable by the account owner`, and `Privacy Boundary`
+    - live CSS grep for print/PDF rules
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
 - Next shorthand:
-  - `xx` should move to P1Q3 Investor Share Polish.
+  - `xx` should move to P1Q4 Conversion CTA / Next-Step Flow.
   - `pp` should move to P2 Broker Conversion And Retention after P1Q4 is complete.
