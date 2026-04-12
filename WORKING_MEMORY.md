@@ -3125,7 +3125,7 @@ Date: 2026-04-10
 - Started P6 after user sent `pp`.
 - P6 quarter map:
   - P6Q1 Integration Readiness Command: complete
-  - P6Q2 FUB Sync Reliability Proof: pending
+  - P6Q2 FUB Sync Reliability Proof: complete
   - P6Q3 Sender And Delivery Reliability: pending
   - P6Q4 Data Integrity Closeout: pending
 - P6Q1 scope:
@@ -3156,4 +3156,40 @@ Date: 2026-04-10
 - Next shorthand:
   - `xx` should move to P6Q2 FUB Sync Reliability Proof.
   - `go` should continue P6Q1 only if we want to expand the admin card with more detailed integration drilldowns.
+  - `pp` should move to P7 Investor Packaging And Sharing after P6Q4 is complete.
+- P6Q2 scope:
+  - Add dedicated FUB sync reliability proof to the Admin System tab and `/api/admin/system` payload.
+  - Use aggregate-only production-role coverage, sync recency, 24-hour sync activity, and distinct-contact basis.
+  - Preserve the current shared-FUB-account caveat without deleting or rewriting raw lead rows.
+- P6Q2 status:
+  - Completed backend FUB reliability payload in `/home/empathetic/.openclaw/workspace/api/routers/admin.py`.
+  - `/api/admin/system` now returns `fub_reliability` with:
+    - `status`
+    - `score`
+    - `latest_sync_at`
+    - `sync_events_24h`
+    - production member FUB coverage counts
+    - raw row / distinct FUB contact basis
+    - shared-owner row caveat
+    - FUB timer state
+  - Completed frontend proof panel in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/AdminPanel.jsx`.
+  - Added `FUB Sync Reliability Proof` and `FUB Proof Checklist` sections to the Admin System tab.
+  - Added smoke validator coverage in `/home/empathetic/eliterealty.homes/scripts/vesta_smoke.py` so future full smoke runs verify `fub_reliability.members`, `fub_reliability.contacts`, `contacts.basis == distinct_fub_contacts`, and no client-sensitive keys.
+  - Fixed a production safety regression discovered during P6Q2 verification:
+    - `/home/empathetic/.openclaw/workspace/api/app.py` now mounts `/api/demo/*` only when `VESTA_PUBLIC_DEMO_API` is explicitly enabled.
+    - This restored expected production behavior where public demo API endpoints are not executable from the live app.
+  - Restarted `vesta-api.service` after backend changes; health returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - Deployed frontend bundle `index-BTCHMuhG.js` and CSS bundle `index-CG_AM_u9.css` to both `/home/empathetic/.openclaw/workspace/api/static/assets/` and `/home/empathetic/html/vesta-tech/assets/`.
+  - Verification passed:
+    - `python3 -m compileall -q /home/empathetic/.openclaw/workspace/api/app.py /home/empathetic/.openclaw/workspace/api/routers/admin.py`
+    - `npm run lint`
+    - `npm run build`
+    - `npm run deploy`
+    - `curl -sS http://127.0.0.1:8080/health`
+    - live asset grep for `FUB Sync Reliability Proof`, `Show that CRM data`, `FUB Proof Checklist`, `distinct-contact basis`, and `shared-account caveat`
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
+- Next shorthand:
+  - `xx` should move to P6Q3 Sender And Delivery Reliability.
+  - `go` should continue P6Q2 only if we want extra FUB drilldown cards.
   - `pp` should move to P7 Investor Packaging And Sharing after P6Q4 is complete.

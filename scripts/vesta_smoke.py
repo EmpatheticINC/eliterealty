@@ -258,15 +258,20 @@ def validate_admin_system(_status, _headers, _text, parsed):
     assert "ops_overview" in parsed, "missing ops_overview"
     assert "background_jobs" in parsed, "missing background_jobs"
     assert "ai_quality" in parsed, "missing ai_quality"
+    assert "fub_reliability" in parsed, "missing fub_reliability"
     background_jobs = parsed.get("background_jobs") or {}
     assert isinstance(background_jobs.get("summary"), dict), "missing background_jobs.summary"
     jobs = background_jobs.get("jobs")
     assert isinstance(jobs, list), "missing background_jobs.jobs"
+    fub_reliability = parsed.get("fub_reliability") or {}
+    assert isinstance(fub_reliability.get("members"), dict), "missing fub_reliability.members"
+    assert isinstance(fub_reliability.get("contacts"), dict), "missing fub_reliability.contacts"
+    assert fub_reliability.get("contacts", {}).get("basis") == "distinct_fub_contacts", "unexpected FUB contact basis"
     assert any(
         job.get("unit") == "vesta-platform.service" and job.get("classification") == "disabled"
         for job in jobs
     ), "legacy vesta-platform unit should be classified as disabled"
-    for key in ("ops_overview", "ai_quality"):
+    for key in ("ops_overview", "ai_quality", "fub_reliability"):
         paths = forbidden_key_paths(parsed.get(key), FORBIDDEN_PRIVACY_KEYS)
         assert not paths, f"{key} exposed forbidden key(s): {', '.join(paths[:8])}"
 
