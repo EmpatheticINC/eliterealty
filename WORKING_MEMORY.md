@@ -3365,3 +3365,44 @@ Date: 2026-04-10
   - `xx` should move to P7Q4 Investor Packaging Closeout + Launch QA.
   - `go` should continue P7Q3 only if we want deeper follow-up workflow polish.
   - `pp` should move to P8 after P7Q4 is complete.
+
+## 2026-04-12 LLM Routing Cleanup
+
+- User asked to make sure everything routes through Ollama Cloud and no local LLMs are used.
+- Production service state:
+  - `ollama.service` is disabled and inactive.
+  - `ollama-warmup.service` is disabled and inactive.
+  - `vesta-allday-learning.timer` is disabled and inactive because `all-day-learning.py` still contains local Ollama calls.
+  - `vesta-allday-learning.service` is static and inactive.
+  - Process scan showed no active `ollama`, `all-day-learning`, `gemma`, `nomic`, or `vesta-llm` process after the cleanup, aside from the temporary grep/probe commands themselves.
+- Code changes:
+  - Updated `/home/empathetic/.openclaw/workspace/vesta_llm.py` so `ollama()` always routes to Ollama Cloud and refuses localhost fallback if `OLLAMA_API_KEY` is missing.
+  - Legacy local model aliases now map to cloud:
+    - `vesta-llm` -> `gpt-oss:120b-cloud`
+    - `gemma4:e4b` -> `gpt-oss:20b-cloud`
+    - `gemma4:26b` -> `gpt-oss:120b-cloud`
+  - Updated `/home/empathetic/.openclaw/workspace/vesta_memory.py` so local mem0/Ollama embedding is disabled by default and memory falls back to JSON instead of pulling/calling `nomic-embed-text`.
+  - `vesta_memory.py` only allows the legacy local memory LLM path if `VESTA_ENABLE_LOCAL_MEMORY_LLM=true` is explicitly set; it is not set in `/home/empathetic/.openclaw/env`.
+- Services restarted after code changes:
+  - `vesta-api.service`
+  - `email-monitor.service`
+  - `speed-to-lead.service`
+  - `vesta-bot.service`
+  - `vesta-continuous.service`
+  - `fub-inbound-monitor.service`
+- Verification passed:
+  - `python3 -m compileall -q` on `vesta_llm.py`, `vesta_memory.py`, API pipeline router, email monitor, speed-to-lead, bot, and agent modules
+  - Cloud route probe:
+    - `vesta-llm -> gpt-oss:120b-cloud`
+    - `gemma4:e4b -> gpt-oss:20b-cloud`
+    - tiny Ollama Cloud call returned `OK`
+  - Memory probe:
+    - `LOCAL_MEMORY_LLM_ENABLED -> False`
+    - `get_memory() -> None`
+    - `_embed_query("hello") -> []`
+  - `curl -sS http://127.0.0.1:8080/health` -> `{"status":"ok","db":"ok","version":"1.0.0"}`
+  - `systemctl --user --failed` -> `0 loaded units`
+  - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+  - `python3 scripts/vesta_smoke.py` -> 45 passed, 0 failed
+- Important note:
+  - Older legacy/background scripts still contain literal `localhost:11434` references, but the local services/timers that would run them are disabled. The active shared production LLM wrapper now blocks local fallback.
