@@ -2849,8 +2849,8 @@ Date: 2026-04-10
 - P2 breakdown:
   - P2Q1 Broker Value Brief: complete
   - P2Q2 Broker Activation Loop: complete
-  - P2Q3 Broker Team Adoption Signals: next
-  - P2Q4 Broker Renewal / Proof Pack Closeout: pending
+  - P2Q3 Broker Team Adoption Signals: complete
+  - P2Q4 Broker Renewal / Proof Pack Closeout: next
 - P2Q1 status:
   - Completed broker conversion / retention value brief in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/BrokerPortal.jsx`.
   - Added broker overview `Broker Value Brief` section directly under the executive ROI snapshot.
@@ -2879,6 +2879,20 @@ Date: 2026-04-10
     - live asset grep for `Broker Activation Loop`, `Keep the brokerage moving in four checks`, `Loop Health`, `Protect hot opportunities`, `Clear approval queue`, `Remove setup friction`, and `Review proof and team adoption`
     - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
     - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
+- P2Q3 status:
+  - Completed broker team adoption signals in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/BrokerPortal.jsx`.
+  - Added `AdoptionSignalCard` and a broker overview `Team Adoption Signals` section directly under the activation loop.
+  - The panel uses existing live aggregate broker data only: active teams this week, sender readiness, FUB coverage, pending approvals, and the current top adoption team.
+  - Added a broker coaching prompt that routes to `Teams` when team coverage is low, `System Health` when coverage is healthy enough to inspect setup/system readiness, and never exposes client-level pipeline rows.
+  - Deployed frontend bundle `index-D23VBTki.js` and CSS bundle `index-cLKnyLfS.css` to both `/home/empathetic/.openclaw/workspace/api/static/assets/` and `/home/empathetic/html/vesta-tech/assets/`.
+  - Verification passed:
+    - `npm run lint`
+    - `npm run build`
+    - `npm run deploy`
+    - `curl -sS http://127.0.0.1:8080/health`
+    - live asset grep for `Team Adoption Signals`, `Prove the brokerage is using the operating layer`, `Team Coverage`, `Sender Readiness`, `FUB Coverage`, and `Broker Coaching Prompt`
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
 - Next shorthand:
-  - `xx` should move to P2Q3 Broker Team Adoption Signals.
+  - `xx` should move to P2Q4 Broker Renewal / Proof Pack Closeout.
   - `pp` should move to P3 Lead/Agent Productivity after P2Q4 is complete.
