@@ -2848,8 +2848,8 @@ Date: 2026-04-10
     - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
 - P2 breakdown:
   - P2Q1 Broker Value Brief: complete
-  - P2Q2 Broker Activation Loop: next
-  - P2Q3 Broker Team Adoption Signals: pending
+  - P2Q2 Broker Activation Loop: complete
+  - P2Q3 Broker Team Adoption Signals: next
   - P2Q4 Broker Renewal / Proof Pack Closeout: pending
 - P2Q1 status:
   - Completed broker conversion / retention value brief in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/BrokerPortal.jsx`.
@@ -2865,6 +2865,20 @@ Date: 2026-04-10
     - live asset grep for `Broker Value Brief`, `Recommended Action`, `what Vesta protected`, `Value Protected`, and `Setup Friction`
     - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
     - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
+- P2Q2 status:
+  - Completed broker activation loop in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/BrokerPortal.jsx`.
+  - Added `ActivationStep` and a broker overview `Broker Activation Loop` section directly under the value brief.
+  - The loop turns the broker overview into four active operating checks: protect hot opportunities, clear approval queue, remove setup friction, and review proof / team adoption.
+  - Uses existing live broker values only, routing to `/pipeline`, `/approvals`, `/settings`, or the broker revenue tab without backend changes.
+  - Deployed frontend bundle `index-BtcgKJ_W.js` and CSS bundle `index-C0BcmySZ.css` to both `/home/empathetic/.openclaw/workspace/api/static/assets/` and `/home/empathetic/html/vesta-tech/assets/`.
+  - Verification passed:
+    - `npm run lint`
+    - `npm run build`
+    - `npm run deploy`
+    - `curl -sS http://127.0.0.1:8080/health`
+    - live asset grep for `Broker Activation Loop`, `Keep the brokerage moving in four checks`, `Loop Health`, `Protect hot opportunities`, `Clear approval queue`, `Remove setup friction`, and `Review proof and team adoption`
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
 - Next shorthand:
-  - `xx` should move to P2Q2 Broker Activation Loop.
+  - `xx` should move to P2Q3 Broker Team Adoption Signals.
   - `pp` should move to P3 Lead/Agent Productivity after P2Q4 is complete.
