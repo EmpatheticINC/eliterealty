@@ -2747,6 +2747,11 @@ Date: 2026-04-10
     - `vesta-llm:latest`
     - `nomic-embed-text:latest`
   - Ollama cleanup freed the main RAM pressure source: RAM moved from about `10 GiB used / 4.4 GiB available` to about `3.5 GiB used / 11 GiB available`; `/home/empathetic/.ollama/models` dropped from about `31G` to `20K`. Swap may remain partially occupied until WSL/Linux naturally reclaims it or the host restarts; passwordless sudo was unavailable for a swap refresh.
+  - Follow-up swap refresh on 2026-04-11:
+    - `swapoff -a` cleared old swap pressure.
+    - Because `/etc/fstab` had no swap entry, `swapon -a` did not restore the original WSL swap.
+    - Created active session swapfile `/swapfile` at `4G` without adding it to `/etc/fstab` to avoid persistent duplicate swap later.
+    - Final check showed RAM about `6.3 GiB used / 8.8 GiB available` and swap `/swapfile` at `4G`, `0B` used.
   - Disabled stale units remain intentionally untouched:
     - `vesta-composio.service`
     - `sms-inbound-monitor.service`
@@ -2782,7 +2787,7 @@ Date: 2026-04-10
   - P1Q1 Investor Narrative: complete
   - P1Q2 ROI Proof Pack: complete
   - P1Q3 Investor Share Polish: complete
-  - P1Q4 Conversion CTA / Next-Step Flow: pending
+  - P1Q4 Conversion CTA / Next-Step Flow: complete
 - P1Q1 status:
   - Completed investor-facing narrative pass in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorDashboard.jsx`.
   - Added thesis/story cards explaining problem, product, investor fit, and a plain-English investor readout.
@@ -2827,6 +2832,20 @@ Date: 2026-04-10
     - live CSS grep for print/PDF rules
     - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
     - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
+- P1Q4 status:
+  - Completed investor conversion CTA / next-step flow in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorDashboard.jsx`.
+  - Added a private investor dashboard next-step section that turns the report into a workflow: export proof pack, create investor link, and copy meeting memo.
+  - Completed public investor share CTA in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorSharePage.jsx`.
+  - Added a diligence CTA with `Request Review` mailto to `aiden@vesta-tech.net`, `Save PDF`, and a three-step validation / inspection / walkthrough flow.
+  - Deployed frontend bundle `index-BteGen7x.js` and CSS bundle `index-DrPHEsuk.css` to both `/home/empathetic/.openclaw/workspace/api/static/assets/` and `/home/empathetic/html/vesta-tech/assets/`.
+  - Verification passed:
+    - `npm run lint`
+    - `npm run build`
+    - `npm run deploy`
+    - `curl -sS http://127.0.0.1:8080/health`
+    - live asset grep for `Next-Step Flow`, `Turn this proof into an investor conversation`, `Ready for diligence`, `Request Review`, `Copy Meeting Memo`, and `Create Investor Link`
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
 - Next shorthand:
-  - `xx` should move to P1Q4 Conversion CTA / Next-Step Flow.
-  - `pp` should move to P2 Broker Conversion And Retention after P1Q4 is complete.
+  - `xx` should not advance further inside P1 because P1Q4 is complete.
+  - `pp` should move to P2 Broker Conversion And Retention.
