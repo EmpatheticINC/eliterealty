@@ -2846,6 +2846,25 @@ Date: 2026-04-10
     - live asset grep for `Next-Step Flow`, `Turn this proof into an investor conversation`, `Ready for diligence`, `Request Review`, `Copy Meeting Memo`, and `Create Investor Link`
     - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
     - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
+- P2 breakdown:
+  - P2Q1 Broker Value Brief: complete
+  - P2Q2 Broker Activation Loop: next
+  - P2Q3 Broker Team Adoption Signals: pending
+  - P2Q4 Broker Renewal / Proof Pack Closeout: pending
+- P2Q1 status:
+  - Completed broker conversion / retention value brief in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/BrokerPortal.jsx`.
+  - Added broker overview `Broker Value Brief` section directly under the executive ROI snapshot.
+  - The value brief shows broker-facing retention proof: value protected, attention needed, automation lift, setup friction, and a recommended action.
+  - Recommended action dynamically routes to `/pipeline` when revenue/follow-up risk is active, `/settings` when roster readiness gaps exist, or the broker revenue tab when the brokerage is clean enough to review proof.
+  - Deployed frontend bundle `index-BLSZ8iAG.js` and CSS bundle `index-BU7t0e0d.css` to both `/home/empathetic/.openclaw/workspace/api/static/assets/` and `/home/empathetic/html/vesta-tech/assets/`.
+  - Verification passed:
+    - `npm run lint`
+    - `npm run build`
+    - `npm run deploy`
+    - `curl -sS http://127.0.0.1:8080/health`
+    - live asset grep for `Broker Value Brief`, `Recommended Action`, `what Vesta protected`, `Value Protected`, and `Setup Friction`
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
 - Next shorthand:
-  - `xx` should not advance further inside P1 because P1Q4 is complete.
-  - `pp` should move to P2 Broker Conversion And Retention.
+  - `xx` should move to P2Q2 Broker Activation Loop.
+  - `pp` should move to P3 Lead/Agent Productivity after P2Q4 is complete.
