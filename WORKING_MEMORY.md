@@ -3278,7 +3278,7 @@ Date: 2026-04-10
 - P7 quarter map:
   - P7Q1 Investor Proof Pack Readiness: complete
   - P7Q2 Share-Link Presentation + Public Investor Readout: complete
-  - P7Q3 Investor Follow-Up / Meeting Workflow: pending
+  - P7Q3 Investor Follow-Up / Meeting Workflow: complete
   - P7Q4 Investor Packaging Closeout + Launch QA: pending
 - P7Q1 scope:
   - Add an investor package readiness layer so the product can answer whether the proof pack is ready to send or needs more context.
@@ -3334,4 +3334,34 @@ Date: 2026-04-10
 - Next shorthand:
   - `xx` should move to P7Q3 Investor Follow-Up / Meeting Workflow.
   - `go` should continue P7Q2 only if we want additional public-readout polish.
+  - `pp` should move to P8 after P7Q4 is complete.
+- P7Q3 scope:
+  - Turn investor share activity into a follow-up workflow without adding invasive tracking or exposing client data.
+  - Use share status, expiry, view count, last-viewed timing, and aggregate proof readiness only.
+  - Help the operator decide whether to follow up now, send a reminder, create a fresh link, or leave a revoked/expired link closed.
+- P7Q3 status:
+  - Completed backend share follow-up payload in `/home/empathetic/.openclaw/workspace/api/routers/investor.py`.
+  - `/api/investor/shares` share rows now include `follow_up` with:
+    - `status`
+    - `priority`
+    - `next_step`
+    - `basis == share_status_view_count_expiry`
+  - Completed frontend follow-up workflow in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/InvestorDashboard.jsx`.
+  - Added `Investor Follow-Up Workflow`, active-link count, viewed-link count, reminder queue, latest view, and `Copy Follow-Up Brief`.
+  - Reworked investor share cards to show the follow-up next step while retaining revoke controls for active links.
+  - Added smoke validator coverage in `/home/empathetic/eliterealty.homes/scripts/vesta_smoke.py` so future full smoke runs verify investor share follow-up status, priority, basis, and privacy boundary for admin and broker scopes.
+  - Restarted `vesta-api.service` after backend changes; health returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - Deployed frontend bundle `index-DwK7w7Tx.js` and CSS bundle `index-C7kj-SPM.css` to both `/home/empathetic/.openclaw/workspace/api/static/assets/` and `/home/empathetic/html/vesta-tech/assets/`.
+  - Verification passed:
+    - `python3 -m compileall -q /home/empathetic/.openclaw/workspace/api/routers/investor.py`
+    - `npm run lint`
+    - `npm run build`
+    - `npm run deploy`
+    - `curl -sS http://127.0.0.1:8080/health`
+    - live asset grep for `Investor Follow-Up Workflow`, `Copy Follow-Up Brief`, `Turn share activity`, `Reminder queue`, `share_status_view_count_expiry`, and `Follow-Up Brief Copied`
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 45 passed, 0 failed
+- Next shorthand:
+  - `xx` should move to P7Q4 Investor Packaging Closeout + Launch QA.
+  - `go` should continue P7Q3 only if we want deeper follow-up workflow polish.
   - `pp` should move to P8 after P7Q4 is complete.

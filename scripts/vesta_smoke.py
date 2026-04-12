@@ -308,6 +308,19 @@ def validate_investor_snapshot(_status, _headers, _text, parsed):
     assert not paths, f"investor snapshot exposed forbidden key(s): {', '.join(paths[:8])}"
 
 
+def validate_investor_shares(_status, _headers, _text, parsed):
+    assert isinstance(parsed, dict), "investor shares response was not JSON"
+    shares = parsed.get("shares")
+    assert isinstance(shares, list), "missing shares list"
+    for share in shares:
+        follow_up = share.get("follow_up") or {}
+        assert follow_up.get("status") in {"viewed", "sent_not_viewed", "expired", "closed"}, "missing share follow-up status"
+        assert follow_up.get("priority") in {"high", "medium", "low"}, "missing share follow-up priority"
+        assert follow_up.get("basis") == "share_status_view_count_expiry", "unexpected share follow-up basis"
+    paths = forbidden_key_paths(parsed, FORBIDDEN_PRIVACY_KEYS)
+    assert not paths, f"investor shares exposed forbidden key(s): {', '.join(paths[:8])}"
+
+
 def run_public_checks(runner: SmokeRunner) -> None:
     runner.expect_status("health", "GET", "/health", 200, validator=validate_health)
     runner.expect_status("auth providers", "GET", "/auth/providers", 200, validator=validate_auth_providers)
@@ -346,6 +359,7 @@ def run_admin_checks(runner: SmokeRunner, token: str) -> None:
     runner.expect_status("admin audit", "GET", "/api/admin/audit", 200, token=token, validator=validate_no_privacy_keys("admin audit"))
     runner.expect_status("admin ROI assumptions", "GET", "/api/admin/roi-assumptions", 200, token=token, validator=lambda *_args: require_json(_args[3]))
     runner.expect_status("admin investor snapshot", "GET", "/api/investor/snapshot", 200, token=token, validator=validate_investor_snapshot)
+    runner.expect_status("admin investor shares", "GET", "/api/investor/shares", 200, token=token, validator=validate_investor_shares)
 
 
 def run_broker_checks(runner: SmokeRunner, token: str) -> None:
@@ -358,6 +372,7 @@ def run_broker_checks(runner: SmokeRunner, token: str) -> None:
     runner.expect_status("broker approvals", "GET", "/api/approvals", 200, token=token, validator=lambda *_args: require_json(_args[3]))
     runner.expect_status("broker pipeline stats", "GET", "/api/pipeline/stats", 200, token=token, validator=lambda *_args: require_json(_args[3]))
     runner.expect_status("broker investor snapshot", "GET", "/api/investor/snapshot", 200, token=token, validator=validate_investor_snapshot)
+    runner.expect_status("broker investor shares", "GET", "/api/investor/shares", 200, token=token, validator=validate_investor_shares)
 
 
 def main() -> int:
