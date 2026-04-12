@@ -3382,7 +3382,7 @@ Date: 2026-04-10
     - `gemma4:e4b` -> `gpt-oss:20b-cloud`
     - `gemma4:26b` -> `gpt-oss:120b-cloud`
   - Updated `/home/empathetic/.openclaw/workspace/vesta_memory.py` so local mem0/Ollama embedding is disabled by default and memory falls back to JSON instead of pulling/calling `nomic-embed-text`.
-  - `vesta_memory.py` only allows the legacy local memory LLM path if `VESTA_ENABLE_LOCAL_MEMORY_LLM=true` is explicitly set; it is not set in `/home/empathetic/.openclaw/env`.
+  - Follow-up hardening later removed the `VESTA_ENABLE_LOCAL_MEMORY_LLM` escape hatch entirely; `vesta_memory.py` now hard-disables local memory LLMs and returns the JSON fallback path only.
 - Services restarted after code changes:
   - `vesta-api.service`
   - `email-monitor.service`
@@ -3466,3 +3466,58 @@ Date: 2026-04-10
   - Do not edit files Claude is actively touching unless the user explicitly asks for a merge/repair.
   - Prefer backend contracts, tests, smoke coverage, documentation, and narrowly scoped non-overlapping fixes while Claude is designing.
   - Before every deploy, run a recent-file collision check with `find /home/empathetic/.openclaw/workspace/vesta-app/src -mmin -2 -type f`.
+- Nexus install status:
+  - Installed Grafbase Nexus Router v0.6.0 to `/home/empathetic/.nexus/bin/nexus` using the official install script from `https://nexusrouter.com/install`.
+  - The installer appended `/home/empathetic/.nexus/bin` to `/home/empathetic/.bashrc`.
+  - Added local Vesta-limited Nexus config at `/home/empathetic/.nexus/vesta-nexus.toml`.
+  - Nexus is configured only for local development:
+    - listen address `127.0.0.1:6000`
+    - MCP path `/mcp`
+    - filesystem MCP access limited to:
+      - `/home/empathetic/.openclaw/workspace/vesta-app`
+      - `/home/empathetic/.openclaw/workspace/api`
+      - `/home/empathetic/eliterealty.homes`
+  - Added project MCP pointer at `/home/empathetic/.openclaw/workspace/vesta-app/.vscode/mcp.json` with `vesta-nexus -> http://127.0.0.1:6000/mcp`.
+  - Added and enabled user service `/home/empathetic/.config/systemd/user/vesta-nexus.service`.
+  - Verified service:
+    - `systemctl --user status vesta-nexus.service` -> active/running
+    - `curl http://127.0.0.1:6000/mcp` -> HTTP 405 Method Not Allowed, expected for a non-GET MCP endpoint
+    - memory observed around 77 MB steady after startup, 145 MB peak
+  - Important caution:
+    - Nexus is a dev MCP/router tool, not a production Vesta feature and not a code graphing tool by itself. It can help Claude/Codex route tools safely once connected, but code graphing still needs separate tools like Madge/rg/custom analyzers.
+- Improvement-mode read-only audit seeds:
+  - Frontend import map via Madge:
+    - `42` frontend modules
+    - `64` import edges
+    - highest import fan-out: `App.jsx`, `AdminPanel.jsx`, `Pipeline.jsx`, `BrokerPortal.jsx`, `InvestorDashboard.jsx`, `TeamPortal.jsx`
+  - Largest current frontend simplification targets:
+    - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/BrokerPortal.jsx` ~2201 lines
+    - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/Pipeline.jsx` ~1766 lines
+    - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/AdminPanel.jsx` ~1521 lines
+    - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/TeamPortal.jsx` ~1325 lines
+    - `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/Settings.jsx` ~1018 lines
+  - Largest current backend simplification targets:
+    - `/home/empathetic/.openclaw/workspace/api/routers/chat.py` ~1953 lines
+    - `/home/empathetic/.openclaw/workspace/api/routers/broker_portal.py` ~1655 lines
+    - `/home/empathetic/.openclaw/workspace/api/routers/pipeline.py` ~1513 lines
+    - `/home/empathetic/.openclaw/workspace/api/routers/admin.py` ~1029 lines
+    - `/home/empathetic/.openclaw/workspace/api/routers/onboard.py` ~820 lines
+- No-local-LLM follow-up during improvement mode:
+  - Removed the final active direct local warmup call from `/home/empathetic/.openclaw/workspace/api/routers/chat.py`.
+  - The removed block posted to `http://localhost:11434/api/generate` for old `gemma4:e4b` GPU warmup after 26b agents; it was obsolete and should not be replaced with a cloud warmup because that would add cost without product value.
+  - Hardened `/home/empathetic/.openclaw/workspace/vesta_memory.py` so local memory embeddings are hard-disabled rather than environment-toggle disabled.
+  - Verified targeted scan returned no `localhost:11434`, `gemma4:e4b`, `gemma4:26b`, or `nomic-embed-text` literals in the production API and memory module outside the cloud alias wrapper.
+  - Restarted production user services after cleanup:
+    - `vesta-api.service`
+    - `email-monitor.service`
+    - `speed-to-lead.service`
+    - `vesta-bot.service`
+    - `vesta-continuous.service`
+    - `fub-inbound-monitor.service`
+  - Verification passed:
+    - compileall on `vesta_memory.py` and `api/routers/chat.py`
+    - memory probe: `LOCAL_MEMORY_LLM_ENABLED False`, `get_memory None`, `_embed_query("hello")` length `0`
+    - health returned `{"status":"ok","db":"ok","version":"1.0.0"}`
+    - `systemctl --user --failed` -> `0 loaded units`
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 45 passed, 0 failed
