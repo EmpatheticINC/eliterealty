@@ -3051,7 +3051,7 @@ Date: 2026-04-10
   - `xx` should move to P5Q2 Approval / Draft Guardrails.
 - P5 breakdown:
   - P5Q1 Chat Safety & Context Boundary: complete
-  - P5Q2 Approval / Draft Guardrails: next
+  - P5Q2 Approval / Draft Guardrails: complete
   - P5Q3 Pipeline-to-AI Privacy Controls: pending
   - P5Q4 Admin AI Safety Proof Closeout: pending
 - P5Q1 status:
@@ -3070,6 +3070,22 @@ Date: 2026-04-10
     - live asset grep for `Client-Safe AI Mode`, `Client-safe AI reminder`, `Ask Vesta with stage, score, timing, and goals`, `Client-sensitive details should stay out of chat`, and `review client details`
     - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
     - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
+- P5Q2 status:
+  - Completed approval / draft guardrails in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/Approvals.jsx` and `/home/empathetic/.openclaw/workspace/vesta-app/src/components/pipeline/ComposeModal.jsx`.
+  - Added draft safety flag checks for possible SSNs, payment data, credentials, banking details, promise language, and fair-housing cues.
+  - Added `Draft Safety Review` to the Approvals queue with counts for drafts needing a safety read, attachments, guardrails, and fast approvals.
+  - Added `Client-safe send check` to expanded approval cards with safety flags and review guidance before send.
+  - Changed approval action copy from `Approve & Send` to `Reviewed & Send`.
+  - Added `Client-safe draft check` to Compose before queueing drafts into the Approval Inbox.
+  - Deployed frontend bundle `index-C7b4zpnd.js` and CSS bundle `index-CJYiHWHg.css` to both `/home/empathetic/.openclaw/workspace/api/static/assets/` and `/home/empathetic/html/vesta-tech/assets/`.
+  - Verification passed:
+    - `npm run lint`
+    - `npm run build`
+    - `npm run deploy`
+    - `curl -sS http://127.0.0.1:8080/health`
+    - live asset grep for `Draft Safety Review`, `Client-safe send check`, `Reviewed & Send`, `Client-safe draft check`, `human review before sending`, and `Needs safety read`
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
 - Next shorthand:
-  - `xx` should move to P5Q2 Approval / Draft Guardrails.
+  - `xx` should move to P5Q3 Pipeline-to-AI Privacy Controls.
   - `pp` should move to P6 Integrations And Data Reliability after P5Q4 is complete.
