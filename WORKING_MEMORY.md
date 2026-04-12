@@ -2914,8 +2914,8 @@ Date: 2026-04-10
 - P3 breakdown:
   - P3Q1 Team Productivity Command Strip: complete
   - P3Q2 Agent Action Prioritization: complete
-  - P3Q3 Approval Speed / Quality Flow: next
-  - P3Q4 Pipeline-to-Chat Handoff Polish: pending
+  - P3Q3 Approval Speed / Quality Flow: complete
+  - P3Q4 Pipeline-to-Chat Handoff Polish: next
 - P3Q1 status:
   - Completed team productivity command strip in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/TeamPortal.jsx`.
   - Added a `Today's Productivity Plan` section under Team Efficiency ROI.
@@ -2946,6 +2946,21 @@ Date: 2026-04-10
     - live asset grep for `Agent Action Priorities`, `Coach the right person first`, `Setup:`, `Needs activity`, `Power user`, `Assign follow-up`, `Push contacts`, and `Top Output`
     - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
     - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
+- P3Q3 status:
+  - Completed approval speed / quality flow in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/Approvals.jsx`.
+  - Added an `Approval Speed Flow` triage panel above the approval queue.
+  - The panel surfaces the next decision, fast-approve count, guardrail-check count, and longest-waiting draft.
+  - Approval cards are now sorted by triage priority using existing fields only: review level, lead score, wait time, guardrails, and attachments.
+  - Added visible triage labels and per-draft triage metadata for wait time, reasons, and guardrail counts.
+  - Deployed frontend bundle `index-DMJkJqy0.js` and CSS bundle `index-ChTdNqqz.css` to both `/home/empathetic/.openclaw/workspace/api/static/assets/` and `/home/empathetic/html/vesta-tech/assets/`.
+  - Verification passed:
+    - `npm run lint`
+    - `npm run build`
+    - `npm run deploy`
+    - `curl -sS http://127.0.0.1:8080/health`
+    - live asset grep for `Approval Speed Flow`, `Clear the riskiest draft first`, `Fast Approves`, `Guardrail Checks`, `Longest Wait`, `Next Decision`, `Review first`, `Check guardrails`, and `Fast approve`
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
 - Next shorthand:
-  - `xx` should move to P3Q3 Approval Speed / Quality Flow.
+  - `xx` should move to P3Q4 Pipeline-to-Chat Handoff Polish.
   - `pp` should move to P4 Admin Trust Center after P3Q4 is complete.
