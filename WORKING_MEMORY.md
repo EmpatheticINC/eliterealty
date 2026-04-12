@@ -3126,7 +3126,7 @@ Date: 2026-04-10
 - P6 quarter map:
   - P6Q1 Integration Readiness Command: complete
   - P6Q2 FUB Sync Reliability Proof: complete
-  - P6Q3 Sender And Delivery Reliability: pending
+  - P6Q3 Sender And Delivery Reliability: complete
   - P6Q4 Data Integrity Closeout: pending
 - P6Q1 scope:
   - Add an admin-facing integration reliability layer using existing live aggregate system signals.
@@ -3192,4 +3192,45 @@ Date: 2026-04-10
 - Next shorthand:
   - `xx` should move to P6Q3 Sender And Delivery Reliability.
   - `go` should continue P6Q2 only if we want extra FUB drilldown cards.
+  - `pp` should move to P7 Investor Packaging And Sharing after P6Q4 is complete.
+- P6Q3 scope:
+  - Add sender and delivery reliability proof to the Admin System tab and `/api/admin/system` payload.
+  - Separate sender setup from delivery outcomes: Outlook token coverage, sender email coverage, approval queue load, sent activity, approved-but-not-sent events, and email monitor freshness.
+  - Keep proof aggregate-only with no recipients, subjects, bodies, or client records.
+- P6Q3 status:
+  - Completed backend sender delivery payload in `/home/empathetic/.openclaw/workspace/api/routers/admin.py`.
+  - `/api/admin/system` now returns `sender_delivery` with:
+    - `status`
+    - `score`
+    - `latest_sent_at`
+    - `latest_queue_at`
+    - email monitor service/freshness
+    - production member sender coverage
+    - awaiting/sent/discarded draft counts
+    - 30-day queued/sent/approved-not-sent/rejected activity counts
+    - aggregate delivery privacy basis
+  - Completed frontend proof panel in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/AdminPanel.jsx`.
+  - Added `Sender & Delivery Reliability` and `Delivery Checklist` sections to the Admin System tab.
+  - The live aggregate currently surfaces sender readiness as a review item instead of falsely greenlighting it:
+    - production roles: `7`
+    - sender email set: `7`
+    - sender-ready with Outlook token: `2`
+  - Added smoke validator coverage in `/home/empathetic/eliterealty.homes/scripts/vesta_smoke.py` so future full smoke runs verify `sender_delivery.members`, `sender_delivery.drafts`, `sender_delivery.activity_30d`, `privacy.basis == aggregate_delivery_signals`, and no client-sensitive keys.
+  - Re-confirmed production demo API hardening:
+    - `/home/empathetic/.openclaw/workspace/api/app.py` keeps `/api/demo/*` behind `VESTA_PUBLIC_DEMO_API`.
+    - `/home/empathetic/.openclaw/env` was updated to `VESTA_PUBLIC_DEMO_API=false` because the env file still had it enabled.
+  - Restarted `vesta-api.service` after backend/env changes; health returned `{"status":"ok","db":"ok","version":"1.0.0"}`.
+  - Deployed frontend bundle `index-CXiTvskM.js` and CSS bundle `index-CG_AM_u9.css` to both `/home/empathetic/.openclaw/workspace/api/static/assets/` and `/home/empathetic/html/vesta-tech/assets/`.
+  - Verification passed:
+    - `python3 -m compileall -q /home/empathetic/.openclaw/workspace/api/routers/admin.py`
+    - `npm run lint`
+    - `npm run build`
+    - `npm run deploy`
+    - `curl -sS http://127.0.0.1:8080/health`
+    - live asset grep for `Sender & Delivery Reliability`, `Prove approved outreach`, `Delivery Checklist`, and aggregate-only delivery copy
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
+- Next shorthand:
+  - `xx` should move to P6Q4 Data Integrity Closeout.
+  - `go` should continue P6Q3 only if we want extra sender drilldown cards.
   - `pp` should move to P7 Investor Packaging And Sharing after P6Q4 is complete.
