@@ -3119,3 +3119,41 @@ Date: 2026-04-10
 - Next shorthand:
   - `pp` should move to P6 Integrations And Data Reliability.
   - `xx` should be mapped after P6 is planned or started.
+
+## 2026-04-12 P6 Integrations And Data Reliability
+
+- Started P6 after user sent `pp`.
+- P6 quarter map:
+  - P6Q1 Integration Readiness Command: complete
+  - P6Q2 FUB Sync Reliability Proof: pending
+  - P6Q3 Sender And Delivery Reliability: pending
+  - P6Q4 Data Integrity Closeout: pending
+- P6Q1 scope:
+  - Add an admin-facing integration reliability layer using existing live aggregate system signals.
+  - Focus on FUB connected coverage, sender readiness, FUB sync freshness, email monitor freshness, speed-to-lead freshness, and expected background job health.
+  - Keep the admin view aggregate-only with no client records, message bodies, or pipeline rows exposed.
+- P6Q1 status:
+  - Completed integration readiness command in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/AdminPanel.jsx`.
+  - Added an `Integration Reliability` section to the Admin System tab.
+  - Added readiness cards for `FUB Coverage`, `Sender Coverage`, `FUB Sync Freshness`, and `Expected Jobs`.
+  - Added a `Freshness Checklist` for Email Monitor, Speed-to-Lead, FUB sync timer, and client visibility boundary.
+  - Used existing `/api/admin/system` payload signals only:
+    - `ops_overview.signals.fub_connected`
+    - `ops_overview.signals.sender_ready`
+    - `automation.fub_sync`
+    - `automation.email_monitor`
+    - `automation.speed_to_lead`
+    - `background_jobs.summary`
+  - Deployed frontend bundle `index-OciQXhul.js` and CSS bundle `index-Ciqn1z07.css` to both `/home/empathetic/.openclaw/workspace/api/static/assets/` and `/home/empathetic/html/vesta-tech/assets/`.
+  - Verification passed:
+    - `npm run lint`
+    - `npm run build`
+    - `npm run deploy`
+    - `curl -sS http://127.0.0.1:8080/health`
+    - live asset grep for `Integration Reliability`, `Prove the operating pipes`, `Freshness Checklist`, `FUB Coverage`, and `Sender Coverage`
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
+- Next shorthand:
+  - `xx` should move to P6Q2 FUB Sync Reliability Proof.
+  - `go` should continue P6Q1 only if we want to expand the admin card with more detailed integration drilldowns.
+  - `pp` should move to P7 Investor Packaging And Sharing after P6Q4 is complete.
