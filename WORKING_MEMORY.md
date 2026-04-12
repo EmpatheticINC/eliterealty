@@ -3047,5 +3047,29 @@ Date: 2026-04-10
     - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
     - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
 - Next shorthand:
-  - `pp` should move to P5 Client-Safe AI Layer.
-  - `xx` should be mapped after P5 is planned or started.
+  - `pp` moved to P5 Client-Safe AI Layer on 2026-04-12.
+  - `xx` should move to P5Q2 Approval / Draft Guardrails.
+- P5 breakdown:
+  - P5Q1 Chat Safety & Context Boundary: complete
+  - P5Q2 Approval / Draft Guardrails: next
+  - P5Q3 Pipeline-to-AI Privacy Controls: pending
+  - P5Q4 Admin AI Safety Proof Closeout: pending
+- P5Q1 status:
+  - Completed chat safety and context boundary in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/Chat.jsx`.
+  - Added a `Client-Safe AI Mode` panel on the empty chat state explaining safe context usage, approval review, and intentional file generation.
+  - Added local sensitive prompt warnings for SSNs, payment data, secrets, and banking details before sending.
+  - Updated the chat input placeholder and footer guidance to discourage sensitive client details in chat.
+  - Updated queued draft confirmation copy to remind users to review client details before sending.
+  - Kept this as a visible, low-risk frontend guardrail; no fake backend policy claims or client data exposure changes.
+  - Deployed frontend bundle `index-DpDflXjN.js` and CSS bundle `index-CPb05WiS.css` to both `/home/empathetic/.openclaw/workspace/api/static/assets/` and `/home/empathetic/html/vesta-tech/assets/`.
+  - Verification passed:
+    - `npm run lint`
+    - `npm run build`
+    - `npm run deploy`
+    - `curl -sS http://127.0.0.1:8080/health`
+    - live asset grep for `Client-Safe AI Mode`, `Client-safe AI reminder`, `Ask Vesta with stage, score, timing, and goals`, `Client-sensitive details should stay out of chat`, and `review client details`
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
+- Next shorthand:
+  - `xx` should move to P5Q2 Approval / Draft Guardrails.
+  - `pp` should move to P6 Integrations And Data Reliability after P5Q4 is complete.
