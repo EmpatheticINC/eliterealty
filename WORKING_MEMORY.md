@@ -2985,7 +2985,7 @@ Date: 2026-04-10
   - P4Q1 Admin Trust Overview: complete
   - P4Q2 Member & Access Assurance: complete
   - P4Q3 System & AI Control Center: complete
-  - P4Q4 Audit / Investor Proof Closeout: pending
+  - P4Q4 Audit / Investor Proof Closeout: complete
 - P4Q1 status:
   - Completed admin trust overview in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/AdminPanel.jsx`.
   - Added an `Admin Trust Center` section at the top of the admin overview with aggregate-only production proof.
@@ -3030,6 +3030,22 @@ Date: 2026-04-10
     - live asset grep for `System & AI Control Center`, `Operator Runbook`, `Start with the signals that can affect production trust`, `Service Layer`, and `If AI quality flags`
     - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
     - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
+- P4Q4 status:
+  - Completed audit / investor proof closeout in `/home/empathetic/.openclaw/workspace/vesta-app/src/pages/AdminPanel.jsx` and `/home/empathetic/.openclaw/workspace/vesta-app/src/components/admin/AdminAuditPanel.jsx`.
+  - Added an `Audit / Investor Proof Closeout` section above the Admin Audit trail.
+  - The closeout summarizes audit coverage, investor proof activity, ROI assumption readiness, and admin control events.
+  - Added a proof checklist for client-record privacy, CSV export scope, investor assumptions, and latest audit event.
+  - Added direct actions for `Export Audit CSV` and `Review ROI Assumptions`; renamed the audit trail export button to `Export CSV`.
+  - Kept the view investor-safe: operator-level audit events only, no client records, message bodies, or pipeline rows.
+  - Deployed frontend bundle `index-CEG7mZek.js` and CSS bundle `index-CXfJr4ID.css` to both `/home/empathetic/.openclaw/workspace/api/static/assets/` and `/home/empathetic/html/vesta-tech/assets/`.
+  - Verification passed:
+    - `npm run lint`
+    - `npm run build`
+    - `npm run deploy`
+    - `curl -sS http://127.0.0.1:8080/health`
+    - live asset grep for `Audit / Investor Proof Closeout`, `Package operator proof without client visibility`, `Proof Checklist`, `Export Audit CSV`, `Review ROI Assumptions`, and `Export CSV`
+    - `python3 scripts/vesta_smoke.py --public-only` -> 28 passed, 0 failed
+    - `python3 scripts/vesta_smoke.py` -> 43 passed, 0 failed
 - Next shorthand:
-  - `xx` should move to P4Q4 Audit / Investor Proof Closeout.
-  - `pp` should move to P5 Client-Safe AI Layer after P4Q4 is complete.
+  - `pp` should move to P5 Client-Safe AI Layer.
+  - `xx` should be mapped after P5 is planned or started.
